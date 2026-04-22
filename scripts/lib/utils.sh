@@ -102,14 +102,18 @@ brew_install_with_timeout() {
 # When UPGRADE_ALL=true (--yes flag) or stdin is not a tty, returns all
 # items that have default="on" immediately without drawing any UI.
 # ─────────────────────────────────────────────────────────────────────────────
+# checkbox_select OUTFILE TITLE SUBTITLE ITEM [ITEM ...]
+# Writes selected keys one-per-line to OUTFILE.
+# Called directly (not in a subshell) so /dev/tty is always accessible.
+# ITEM format: "KEY|Label|description|on|off"
 checkbox_select() {
-    local title="$1"
-    local subtitle="$2"
-    shift 2
-    local items=("$@")   # "KEY|Label|desc|default"
+    local _cb_outfile="$1"
+    local title="$2"
+    local subtitle="$3"
+    shift 3
+    local items=("$@")
 
     local n=${#items[@]}
-    # Use indexed arrays with plain variables for bash 3.2 compatibility
     local keys=() labels=() descs=() selected=()
     local i k l d def
 
@@ -118,30 +122,22 @@ checkbox_select() {
         keys[$i]="$k"
         labels[$i]="$l"
         descs[$i]="$d"
-        if [[ "$def" == "on" ]]; then
-            selected[$i]=1
-        else
-            selected[$i]=0
-        fi
+        [[ "$def" == "on" ]] && selected[$i]=1 || selected[$i]=0
     done
 
-    # Non-interactive only (CI/pipe): return defaults immediately without drawing UI
-    # NOTE: UPGRADE_ALL (--yes) intentionally does NOT skip the menu —
-    # --yes only controls upgrade prompts for already-installed tools.
-    if [[ ! -t 1 ]]; then
+    # If /dev/tty is unavailable (true CI — no controlling terminal),
+    # write defaults and return without showing any UI.
+    if ! 2>/dev/null </dev/tty; then
         for i in "${!keys[@]}"; do
-            [[ "${selected[$i]}" -eq 1 ]] && echo "${keys[$i]}"
+            [[ "${selected[$i]}" -eq 1 ]] && echo "${keys[$i]}" >> "$_cb_outfile"
         done
         return
     fi
 
-    # Build escape sequences at runtime — bash 3.2 $'...' in case patterns
-    # is unreliable; comparing assembled strings works correctly.
     local ESC=$'\033'
     local UP="${ESC}[A"
     local DOWN="${ESC}[B"
     local SEP="----------------------------------------------------------------"
-
     local cursor=0
     local total_lines=$(( n + 5 ))
 
@@ -169,22 +165,17 @@ checkbox_select() {
         printf "\r  \033[0;90mUp/Down: move  Space/Enter: toggle  D: done  A: all  N: none\033[0m\n" >/dev/tty
     }
 
-    # Reserve space for the menu then draw it
     for i in $(seq 1 $total_lines); do printf '\n' >/dev/tty; done
     _cb_draw
 
-    # Save terminal state and switch to raw input
     local saved_tty
     saved_tty=$(stty -g </dev/tty)
     stty -echo -icanon min 1 time 0 </dev/tty
 
     while true; do
         local c1 c2 c3
-        # Read one byte at a time from /dev/tty
         IFS= read -r -s -n1 c1 </dev/tty
-
         if [[ "$c1" == "$ESC" ]]; then
-            # Read two more bytes for escape sequence (arrow keys)
             IFS= read -r -s -n1 c2 </dev/tty
             IFS= read -r -s -n1 c3 </dev/tty
             local seq="${c1}${c2}${c3}"
@@ -195,41 +186,27 @@ checkbox_select() {
             fi
         else
             case "$c1" in
-                ' ')          # Space — toggle current item
+                ' '|'')
                     if [[ "${selected[$cursor]}" -eq 1 ]]; then
                         selected[$cursor]=0
                     else
                         selected[$cursor]=1
                     fi
                     ;;
-                '')           # Enter — toggle current item
-                    if [[ "${selected[$cursor]}" -eq 1 ]]; then
-                        selected[$cursor]=0
-                    else
-                        selected[$cursor]=1
-                    fi
-                    ;;
-                d|D)          # D — done/confirm
-                    break
-                    ;;
-                a|A)          # A — select all
-                    for i in "${!keys[@]}"; do selected[$i]=1; done
-                    ;;
-                n|N)          # N — deselect all
-                    for i in "${!keys[@]}"; do selected[$i]=0; done
-                    ;;
+                d|D) break ;;
+                a|A) for i in "${!keys[@]}"; do selected[$i]=1; done ;;
+                n|N) for i in "${!keys[@]}"; do selected[$i]=0; done ;;
             esac
         fi
         _cb_draw
     done
 
-    # Restore terminal state
     stty "$saved_tty" </dev/tty
     printf '\n' >/dev/tty
 
-    # Output selected keys to stdout
+    # Write results to outfile (not stdout — avoids all subshell/pipe issues)
     for i in "${!keys[@]}"; do
-        [[ "${selected[$i]}" -eq 1 ]] && echo "${keys[$i]}"
+        [[ "${selected[$i]}" -eq 1 ]] && echo "${keys[$i]}" >> "$_cb_outfile"
     done
 }
 

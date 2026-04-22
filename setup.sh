@@ -114,9 +114,13 @@ if [[ "$MINIMAL" == false ]]; then
     log_info "========================================="
     echo ""
 
+    # checkbox_select writes to a temp file — avoids subshell/pipe tty issues.
+    local _sel_tmp
+    _sel_tmp=$(mktemp)
+
     # ── AI Tools ─────────────────────────────────────────────────────────────
-    SEL_AI=()
-    while IFS= read -r _line; do SEL_AI+=("$_line"); done < <(checkbox_select \
+    : > "$_sel_tmp"
+    checkbox_select "$_sel_tmp" \
         "AI Tools" "Tools for building and running AI applications" \
         "ollama|Ollama|Run LLMs locally — Llama, Mistral, Gemma (no API key needed)|on" \
         "claude|Claude Code|Anthropic AI coding CLI (needs ANTHROPIC_API_KEY)|on" \
@@ -124,30 +128,33 @@ if [[ "$MINIMAL" == false ]]; then
         "awscli|AWS CLI|Access Bedrock, SageMaker and other AWS AI services|off" \
         "terraform|Terraform|Infrastructure as code for AI deployments|off" \
         "gh|GitHub CLI|Manage repos, PRs and issues from the terminal|on" \
-        "ngrok|ngrok|Expose localhost to the internet for webhooks & demos|off" \
-    )
+        "ngrok|ngrok|Expose localhost to the internet for webhooks & demos|off"
+    SEL_AI=()
+    while IFS= read -r _line; do [[ -n "$_line" ]] && SEL_AI+=("$_line"); done < "$_sel_tmp"
 
     # ── Databases ────────────────────────────────────────────────────────────
-    SEL_DB=()
-    while IFS= read -r _line; do SEL_DB+=("$_line"); done < <(checkbox_select \
+    : > "$_sel_tmp"
+    checkbox_select "$_sel_tmp" \
         "Databases" "Local databases for development (not auto-started)" \
         "postgresql|PostgreSQL 15|Most popular open-source relational database|on" \
         "redis|Redis|In-memory cache, queues, and session store|on" \
         "sqlite|SQLite|Lightweight embedded database — great for local AI apps|on" \
-        "duckdb|DuckDB|Fast in-process analytical DB — SQL on files, no server|off" \
-    )
+        "duckdb|DuckDB|Fast in-process analytical DB — SQL on files, no server|off"
+    SEL_DB=()
+    while IFS= read -r _line; do [[ -n "$_line" ]] && SEL_DB+=("$_line"); done < "$_sel_tmp"
 
     # ── Editors ──────────────────────────────────────────────────────────────
-    SEL_EDITORS=()
-    while IFS= read -r _line; do SEL_EDITORS+=("$_line"); done < <(checkbox_select \
+    : > "$_sel_tmp"
+    checkbox_select "$_sel_tmp" \
         "Editors" "Code editors — pick one or both" \
         "vscode|VS Code|Popular free editor with Python, Jupyter, Claude & Copilot|on" \
-        "cursor|Cursor|AI-native VS Code fork with built-in chat & autocomplete|on" \
-    )
+        "cursor|Cursor|AI-native VS Code fork with built-in chat & autocomplete|on"
+    SEL_EDITORS=()
+    while IFS= read -r _line; do [[ -n "$_line" ]] && SEL_EDITORS+=("$_line"); done < "$_sel_tmp"
 
     # ── Productivity Apps ─────────────────────────────────────────────────────
-    SEL_APPS=()
-    while IFS= read -r _line; do SEL_APPS+=("$_line"); done < <(checkbox_select \
+    : > "$_sel_tmp"
+    checkbox_select "$_sel_tmp" \
         "Productivity Apps" "GUI apps and Mac utilities" \
         "raycast|Raycast|AI-powered Spotlight replacement with clipboard history|on" \
         "warp|Warp|AI terminal with natural language commands|on" \
@@ -160,15 +167,19 @@ if [[ "$MINIMAL" == false ]]; then
         "alt-tab|AltTab|Windows-style app switcher with live previews|on" \
         "bartender|Bartender|Organise and hide menu bar icons|off" \
         "lungo|Lungo|Keep Mac awake during long installs or downloads|on" \
-        "shottr|Shottr|Fast screenshot tool with annotations and OCR|on" \
-    )
+        "shottr|Shottr|Fast screenshot tool with annotations and OCR|on"
+    SEL_APPS=()
+    while IFS= read -r _line; do [[ -n "$_line" ]] && SEL_APPS+=("$_line"); done < "$_sel_tmp"
 
     # ── Web / JS Tools ────────────────────────────────────────────────────────
-    SEL_WEB=()
-    while IFS= read -r _line; do SEL_WEB+=("$_line"); done < <(checkbox_select \
+    : > "$_sel_tmp"
+    checkbox_select "$_sel_tmp" \
         "Web & JS Tools" "JavaScript/TypeScript development stack (web.sh)" \
-        "web|Full web stack|pnpm, TypeScript, ESLint, Biome, Vite, Vercel CLI, Bruno|on" \
-    )
+        "web|Full web stack|pnpm, TypeScript, ESLint, Biome, Vite, Vercel CLI, Bruno|on"
+    SEL_WEB=()
+    while IFS= read -r _line; do [[ -n "$_line" ]] && SEL_WEB+=("$_line"); done < "$_sel_tmp"
+
+    rm -f "$_sel_tmp"
 
     echo ""
     log_success "Selections saved — starting installation..."
