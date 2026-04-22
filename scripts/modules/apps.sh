@@ -1,97 +1,50 @@
 #!/bin/bash
-# Step 9: Productivity apps — terminal, launchers, utilities, and GUI tools.
+# Step 9: Productivity apps — installs only what the user selected.
 
 log_info "Step 9: Installing productivity tools..."
 
-# ── Terminal ──────────────────────────────────────────────────────────────────
-# iTerm2 — classic terminal emulator
-if brew list --cask iterm2 &>/dev/null; then
-    log_success "iTerm2 already installed"
-else
-    brew_install_cask_with_timeout iterm2 || true
-fi
+_app_selected() {
+    local key="$1"
+    if [[ -z "${SEL_APPS+x}" ]]; then return 0; fi
+    array_contains SEL_APPS "$key"
+}
 
-# Warp — AI-powered terminal (autocomplete, natural language commands)
-if brew list --cask warp &>/dev/null; then
-    log_success "Warp already installed"
-else
-    brew_install_cask_with_timeout warp || true
-fi
+_cask_install() {
+    local key="$1"   # selection key
+    local cask="$2"  # brew cask name
+    local label="$3" # display name
+    if _app_selected "$key"; then
+        if brew list --cask "$cask" &>/dev/null; then
+            log_success "$label already installed"
+        else
+            brew_install_cask_with_timeout "$cask" || true
+        fi
+    fi
+}
+
+# ── Terminal ──────────────────────────────────────────────────────────────────
+_cask_install iterm2    iterm2   "iTerm2"
+_cask_install warp      warp     "Warp"
 
 # ── Launcher & productivity ───────────────────────────────────────────────────
-# Raycast — Spotlight replacement with AI, clipboard history, and extensions
-if brew list --cask raycast &>/dev/null; then
-    log_success "Raycast already installed"
-else
-    brew_install_cask_with_timeout raycast || true
-fi
-
-# Rectangle — window manager (keyboard shortcuts to snap/tile windows)
-if brew list --cask rectangle &>/dev/null; then
-    log_success "Rectangle already installed"
-else
-    brew_install_cask_with_timeout rectangle || true
-fi
-
-# AltTab — Windows-style app switcher with live window previews
-if brew list --cask alt-tab &>/dev/null; then
-    log_success "AltTab already installed"
-else
-    brew_install_cask_with_timeout alt-tab || true
-fi
+_cask_install raycast   raycast  "Raycast"
+_cask_install rectangle rectangle "Rectangle"
+_cask_install alt-tab   alt-tab  "AltTab"
 
 # ── Notes & knowledge ─────────────────────────────────────────────────────────
-# Obsidian — local-first markdown notes / knowledge base
-if brew list --cask obsidian &>/dev/null; then
-    log_success "Obsidian already installed"
-else
-    brew_install_cask_with_timeout obsidian || true
-fi
+_cask_install obsidian  obsidian "Obsidian"
 
 # ── AI Tools (GUI) ────────────────────────────────────────────────────────────
-# LM Studio — GUI app to discover, download, and run local AI models
-if brew list --cask lm-studio &>/dev/null; then
-    log_success "LM Studio already installed"
-else
-    brew_install_cask_with_timeout lm-studio || true
-fi
+_cask_install lmstudio  lm-studio "LM Studio"
 
 # ── Database GUI ──────────────────────────────────────────────────────────────
-# DBeaver — universal database GUI (PostgreSQL, SQLite, Redis, and more)
-if brew list --cask dbeaver-community &>/dev/null; then
-    log_success "DBeaver already installed"
-else
-    brew_install_cask_with_timeout dbeaver-community || true
-fi
-
-# TablePlus — fast, modern database GUI with a native Mac feel
-if brew list --cask tableplus &>/dev/null; then
-    log_success "TablePlus already installed"
-else
-    brew_install_cask_with_timeout tableplus || true
-fi
+_cask_install dbeaver   dbeaver-community "DBeaver"
+_cask_install tableplus tableplus         "TablePlus"
 
 # ── Mac utilities ─────────────────────────────────────────────────────────────
-# Bartender — organise and hide menu bar icons
-if brew list --cask bartender &>/dev/null; then
-    log_success "Bartender already installed"
-else
-    brew_install_cask_with_timeout bartender || true
-fi
-
-# Lungo — keep your Mac awake (prevents sleep during long installs / downloads)
-if brew list --cask lungo &>/dev/null; then
-    log_success "Lungo already installed"
-else
-    brew_install_cask_with_timeout lungo || true
-fi
-
-# Shottr — fast, lightweight screenshot tool with annotations and OCR
-if brew list --cask shottr &>/dev/null; then
-    log_success "Shottr already installed"
-else
-    brew_install_cask_with_timeout shottr || true
-fi
+_cask_install bartender bartender "Bartender"
+_cask_install lungo     lungo     "Lungo"
+_cask_install shottr    shottr    "Shottr"
 
 log_success "Productivity tools installed"
 echo ""

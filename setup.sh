@@ -92,14 +92,87 @@ export SKIP_AI_TOOLS SKIP_DATABASES SKIP_WEB MINIMAL UPGRADE_ALL
 # The tee-based logging below can swallow prompts, making read hang.
 echo ""
 log_info "========================================="
-log_info "Pre-flight: collecting configuration"
+log_info "  AI Dev Setup — Pre-flight"
 log_info "========================================="
-read -p "Enter your Git username: " git_username </dev/tty
-read -p "Enter your Git email: "    git_email    </dev/tty
+echo ""
+read -p "  Enter your Git username: " git_username </dev/tty
+read -p "  Enter your Git email:    " git_email    </dev/tty
 echo ""
 
 # Export so git.sh and shell.sh can use them
 export git_username git_email
+
+# ── Tool selection (skipped in --minimal or --yes mode) ──────────────────────
+# All interactive prompts must happen here, before exec/tee swallows the tty.
+
+if [[ "$MINIMAL" == false ]]; then
+
+    echo ""
+    log_info "========================================="
+    log_info "  Select tools to install"
+    log_info "  (Space toggle · A all · N none · Enter confirm)"
+    log_info "========================================="
+    echo ""
+
+    # ── AI Tools ─────────────────────────────────────────────────────────────
+    mapfile -t SEL_AI < <(checkbox_select \
+        "AI Tools" "Tools for building and running AI applications" \
+        "ollama|Ollama|Run LLMs locally — Llama, Mistral, Gemma (no API key needed)|on" \
+        "claude|Claude Code|Anthropic AI coding CLI (needs ANTHROPIC_API_KEY)|on" \
+        "codex|Codex CLI|OpenAI coding CLI (needs OPENAI_API_KEY)|on" \
+        "awscli|AWS CLI|Access Bedrock, SageMaker and other AWS AI services|off" \
+        "terraform|Terraform|Infrastructure as code for AI deployments|off" \
+        "gh|GitHub CLI|Manage repos, PRs and issues from the terminal|on" \
+        "ngrok|ngrok|Expose localhost to the internet for webhooks & demos|off" \
+    )
+
+    # ── Databases ────────────────────────────────────────────────────────────
+    mapfile -t SEL_DB < <(checkbox_select \
+        "Databases" "Local databases for development (not auto-started)" \
+        "postgresql|PostgreSQL 15|Most popular open-source relational database|on" \
+        "redis|Redis|In-memory cache, queues, and session store|on" \
+        "sqlite|SQLite|Lightweight embedded database — great for local AI apps|on" \
+        "duckdb|DuckDB|Fast in-process analytical DB — SQL on files, no server|off" \
+    )
+
+    # ── Editors ──────────────────────────────────────────────────────────────
+    mapfile -t SEL_EDITORS < <(checkbox_select \
+        "Editors" "Code editors — pick one or both" \
+        "vscode|VS Code|Popular free editor with Python, Jupyter, Claude & Copilot|on" \
+        "cursor|Cursor|AI-native VS Code fork with built-in chat & autocomplete|on" \
+    )
+
+    # ── Productivity Apps ─────────────────────────────────────────────────────
+    mapfile -t SEL_APPS < <(checkbox_select \
+        "Productivity Apps" "GUI apps and Mac utilities" \
+        "raycast|Raycast|AI-powered Spotlight replacement with clipboard history|on" \
+        "warp|Warp|AI terminal with natural language commands|on" \
+        "lmstudio|LM Studio|GUI app to run local AI models — no terminal needed|on" \
+        "iterm2|iTerm2|Classic terminal emulator with tabs & split panes|on" \
+        "rectangle|Rectangle|Snap windows with keyboard shortcuts|on" \
+        "obsidian|Obsidian|Local markdown notes and knowledge base|on" \
+        "dbeaver|DBeaver|Universal database GUI for Postgres, SQLite and more|on" \
+        "tableplus|TablePlus|Fast native Mac database GUI|off" \
+        "alt-tab|AltTab|Windows-style app switcher with live previews|on" \
+        "bartender|Bartender|Organise and hide menu bar icons|off" \
+        "lungo|Lungo|Keep Mac awake during long installs or downloads|on" \
+        "shottr|Shottr|Fast screenshot tool with annotations and OCR|on" \
+    )
+
+    # ── Web / JS Tools ────────────────────────────────────────────────────────
+    mapfile -t SEL_WEB < <(checkbox_select \
+        "Web & JS Tools" "JavaScript/TypeScript development stack (web.sh)" \
+        "web|Full web stack|pnpm, TypeScript, ESLint, Biome, Vite, Vercel CLI, Bruno|on" \
+    )
+
+    echo ""
+    log_success "Selections saved — starting installation..."
+    echo ""
+
+fi
+
+# Export selections so modules can read them
+export SEL_AI SEL_DB SEL_EDITORS SEL_APPS SEL_WEB
 
 # ── Start logging to file ────────────────────────────────────────────────────
 LOGFILE="$HOME/ai-dev-setup_$(date +%Y%m%d_%H%M%S).log"
@@ -185,7 +258,13 @@ run_module macos.sh
 # bash "$SCRIPT_DIR/osx.sh"
 
 # web.sh: JS/web dev stack (Node, pnpm, TypeScript, ESLint, Vite, Bruno)
+_run_web=false
 if [[ "$SKIP_WEB" == false ]] && [[ "$MINIMAL" == false ]]; then
+    if [[ "${UPGRADE_ALL:-false}" == true ]] || array_contains SEL_WEB "web"; then
+        _run_web=true
+    fi
+fi
+if [[ "$_run_web" == true ]]; then
     bash "$SCRIPT_DIR/web.sh"
 fi
 

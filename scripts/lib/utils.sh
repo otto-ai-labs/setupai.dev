@@ -84,6 +84,164 @@ brew_install_with_timeout() {
     fi
 }
 
+# ── Interactive checkbox selector ────────────────────────────────────────────
+# Usage:
+#   checkbox_select "Category title" "description line" selected_var \
+#       "KEY|Label|description|default" ...
+#
+# Each item: "KEY|Label|short description|default"
+#   default = "on" (pre-selected) or "off"
+#
+# On return, selected_var is set in the CALLER's scope via a temp file trick
+# because bash functions can't set variables in the parent directly across
+# subshell boundaries. We print selected keys to stdout and the caller reads
+# them with:   mapfile -t MY_ARRAY < <(checkbox_select ...)
+#
+# Controls: ↑/↓ move, Space toggle, A select all, N deselect all, Enter confirm
+#
+# When UPGRADE_ALL=true (--yes flag) or stdin is not a tty, returns all
+# items that have default="on" immediately without drawing any UI.
+# ─────────────────────────────────────────────────────────────────────────────
+checkbox_select() {
+    local title="$1"
+    local subtitle="$2"
+    shift 2
+    local items=("$@")   # "KEY|Label|desc|default"
+
+    local n=${#items[@]}
+    local -a keys labels descs selected
+
+    for i in "${!items[@]}"; do
+        IFS='|' read -r k l d def <<< "${items[$i]}"
+        keys[$i]="$k"
+        labels[$i]="$l"
+        descs[$i]="$d"
+        if [[ "$def" == "on" ]]; then
+            selected[$i]=1
+        else
+            selected[$i]=0
+        fi
+    done
+
+    # Non-interactive / --yes: return defaults immediately
+    if [[ "${UPGRADE_ALL:-false}" == true ]] || [[ ! -t 0 ]]; then
+        for i in "${!keys[@]}"; do
+            [[ "${selected[$i]}" -eq 1 ]] && echo "${keys[$i]}"
+        done
+        return
+    fi
+
+    # Save terminal state, enable raw input
+    local saved_tty
+    saved_tty=$(stty -g </dev/tty)
+    stty raw -echo </dev/tty
+
+    local cursor=0   # which row the highlight is on
+
+    _cb_draw() {
+        # Move cursor to top of our block and redraw
+        local i
+        # Title
+        tput el </dev/tty
+        printf "\r  ${BLUE}%s${NC}\n" "$title" >/dev/tty
+        tput el </dev/tty
+        printf "\r  ${NC}%s${NC}\n" "$subtitle" >/dev/tty
+        tput el </dev/tty
+        printf "\r  %s\n" "$(printf '%0.s─' {1..60})" >/dev/tty
+
+        for i in "${!keys[@]}"; do
+            tput el </dev/tty
+            local box desc_text
+            if [[ "${selected[$i]}" -eq 1 ]]; then
+                box="${GREEN}[x]${NC}"
+            else
+                box="[ ]"
+            fi
+            if [[ "$i" -eq "$cursor" ]]; then
+                printf "\r  ${YELLOW}▶ %b %-22s${NC} %s\n" \
+                    "$box" "${labels[$i]}" "${descs[$i]}" >/dev/tty
+            else
+                printf "\r    %b %-22s${NC} %s\n" \
+                    "$box" "${labels[$i]}" "${descs[$i]}" >/dev/tty
+            fi
+        done
+        tput el </dev/tty
+        printf "\r  %s\n" "$(printf '%0.s─' {1..60})" >/dev/tty
+        tput el </dev/tty
+        printf "\r  ${NC}↑/↓ move  Space toggle  A all  N none  Enter confirm${NC}\n" >/dev/tty
+
+        # Move back up to redraw next time
+        local total_lines=$(( n + 5 ))
+        tput cuu "$total_lines" </dev/tty
+    }
+
+    # Initial draw
+    printf '\n%.0s' {1..20} >/dev/tty   # reserve space
+    local total_lines=$(( n + 5 ))
+    tput cuu "$total_lines" </dev/tty
+    _cb_draw
+
+    while true; do
+        local key
+        # Read one char; handle escape sequences (arrow keys = ESC [ A/B)
+        IFS= read -r -s -n1 key </dev/tty
+        if [[ "$key" == $'\x1b' ]]; then
+            IFS= read -r -s -n1 -t 0.1 seq1 </dev/tty
+            IFS= read -r -s -n1 -t 0.1 seq2 </dev/tty
+            key="${key}${seq1}${seq2}"
+        fi
+
+        case "$key" in
+            $'\x1b[A'|k|K)   # Up arrow or k
+                (( cursor > 0 )) && (( cursor-- ))
+                ;;
+            $'\x1b[B'|j|J)   # Down arrow or j
+                (( cursor < n - 1 )) && (( cursor++ ))
+                ;;
+            ' ')              # Space — toggle
+                if [[ "${selected[$cursor]}" -eq 1 ]]; then
+                    selected[$cursor]=0
+                else
+                    selected[$cursor]=1
+                fi
+                ;;
+            a|A)              # Select all
+                for i in "${!keys[@]}"; do selected[$i]=1; done
+                ;;
+            n|N)              # Deselect all
+                for i in "${!keys[@]}"; do selected[$i]=0; done
+                ;;
+            $'\r'|$'\n'|'')  # Enter — confirm
+                break
+                ;;
+        esac
+        _cb_draw
+    done
+
+    # Restore terminal, move past the drawn block
+    stty "$saved_tty" </dev/tty
+    local total_lines=$(( n + 5 ))
+    tput cud "$total_lines" </dev/tty
+    printf '\n' >/dev/tty
+
+    # Output selected keys to stdout (caller captures with mapfile/read)
+    for i in "${!keys[@]}"; do
+        [[ "${selected[$i]}" -eq 1 ]] && echo "${keys[$i]}"
+    done
+}
+
+# Helper: check if a key is in a bash array
+# Usage: array_contains MY_ARRAY "KEY"
+array_contains() {
+    local -n _arr="$1"
+    local val="$2"
+    local item
+    for item in "${_arr[@]}"; do
+        [[ "$item" == "$val" ]] && return 0
+    done
+    return 1
+}
+
 brew_install_cask_with_timeout() {
     local timeout_duration=300
     local package="$1"
