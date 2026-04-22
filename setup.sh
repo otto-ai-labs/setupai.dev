@@ -238,3 +238,10 @@ echo "  - Restart your Mac for all system changes to take effect"
 echo ""
 log_info "Log saved to: $LOGFILE"
 log_info "Happy building!"
+
+# ── Reload shell so all tools are immediately available ──────────────────────
+# setup.sh runs in bash, so we can't source ~/.zshrc directly.
+# Instead, hand off to a new interactive zsh session which loads ~/.zshrc
+# automatically — the user lands in a ready-to-use shell.
+log_info "Reloading shell... (type 'exit' to return to your previous session)"
+exec zsh -l
