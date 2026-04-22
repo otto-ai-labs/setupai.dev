@@ -183,15 +183,35 @@ You can customise what gets installed by adding flags to the command.
 ```
 ./setup.sh [OPTIONS]
 
+  --yes, -y          Auto-upgrade all already-installed tools (no prompts)
   --minimal          Install only essentials (languages + shell, no AI tools/databases/apps)
   --skip-ai-tools    Skip AI tools (Ollama, Claude Code, Codex CLI, AWS CLI, Terraform)
   --skip-databases   Skip database installations
+  --skip-web         Skip JS web development tools
   --help             Show available options
+```
+
+### Passing flags with curl
+
+Flags go **after** the closing parenthesis:
+
+```bash
+# Re-run and upgrade everything automatically
+bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes
+
+# Skip databases on re-run
+bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --skip-databases
+
+# Combine flags
+bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes --skip-databases
 ```
 
 ### Common combinations
 
 ```bash
+# Re-run and upgrade all tools without any prompts
+./setup.sh --yes
+
 # Just the essentials — languages and CLI tools only
 ./setup.sh --minimal
 
