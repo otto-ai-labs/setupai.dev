@@ -232,11 +232,14 @@ checkbox_select() {
 
 # Helper: check if a key is in a bash array
 # Usage: array_contains MY_ARRAY "KEY"
+# Uses eval for bash 3.2 compatibility (macOS system bash).
 array_contains() {
-    local -n _arr="$1"
+    local arr_name="$1"
     local val="$2"
     local item
-    for item in "${_arr[@]}"; do
+    local arr_copy
+    eval "arr_copy=(\"\${${arr_name}[@]}\")"
+    for item in "${arr_copy[@]}"; do
         [[ "$item" == "$val" ]] && return 0
     done
     return 1

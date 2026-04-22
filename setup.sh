@@ -115,7 +115,8 @@ if [[ "$MINIMAL" == false ]]; then
     echo ""
 
     # ── AI Tools ─────────────────────────────────────────────────────────────
-    mapfile -t SEL_AI < <(checkbox_select \
+    SEL_AI=()
+    while IFS= read -r _line; do SEL_AI+=("$_line"); done < <(checkbox_select \
         "AI Tools" "Tools for building and running AI applications" \
         "ollama|Ollama|Run LLMs locally — Llama, Mistral, Gemma (no API key needed)|on" \
         "claude|Claude Code|Anthropic AI coding CLI (needs ANTHROPIC_API_KEY)|on" \
@@ -127,7 +128,8 @@ if [[ "$MINIMAL" == false ]]; then
     )
 
     # ── Databases ────────────────────────────────────────────────────────────
-    mapfile -t SEL_DB < <(checkbox_select \
+    SEL_DB=()
+    while IFS= read -r _line; do SEL_DB+=("$_line"); done < <(checkbox_select \
         "Databases" "Local databases for development (not auto-started)" \
         "postgresql|PostgreSQL 15|Most popular open-source relational database|on" \
         "redis|Redis|In-memory cache, queues, and session store|on" \
@@ -136,14 +138,16 @@ if [[ "$MINIMAL" == false ]]; then
     )
 
     # ── Editors ──────────────────────────────────────────────────────────────
-    mapfile -t SEL_EDITORS < <(checkbox_select \
+    SEL_EDITORS=()
+    while IFS= read -r _line; do SEL_EDITORS+=("$_line"); done < <(checkbox_select \
         "Editors" "Code editors — pick one or both" \
         "vscode|VS Code|Popular free editor with Python, Jupyter, Claude & Copilot|on" \
         "cursor|Cursor|AI-native VS Code fork with built-in chat & autocomplete|on" \
     )
 
     # ── Productivity Apps ─────────────────────────────────────────────────────
-    mapfile -t SEL_APPS < <(checkbox_select \
+    SEL_APPS=()
+    while IFS= read -r _line; do SEL_APPS+=("$_line"); done < <(checkbox_select \
         "Productivity Apps" "GUI apps and Mac utilities" \
         "raycast|Raycast|AI-powered Spotlight replacement with clipboard history|on" \
         "warp|Warp|AI terminal with natural language commands|on" \
@@ -160,7 +164,8 @@ if [[ "$MINIMAL" == false ]]; then
     )
 
     # ── Web / JS Tools ────────────────────────────────────────────────────────
-    mapfile -t SEL_WEB < <(checkbox_select \
+    SEL_WEB=()
+    while IFS= read -r _line; do SEL_WEB+=("$_line"); done < <(checkbox_select \
         "Web & JS Tools" "JavaScript/TypeScript development stack (web.sh)" \
         "web|Full web stack|pnpm, TypeScript, ESLint, Biome, Vite, Vercel CLI, Bruno|on" \
     )
