@@ -62,7 +62,7 @@ while [[ "$#" -gt 0 ]]; do
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
-            echo "  --yes, -y          Auto-upgrade all already-installed tools (no prompts)"
+            echo "  --yes, -y          Auto-answer yes to upgrade prompts for already-installed tools"
             echo "  --skip-ai-tools    Skip AI tools (Ollama, Claude Code, Codex CLI)"
             echo "  --skip-databases   Skip database installations"
             echo "  --skip-web         Skip JS web development tools (web.sh)"

@@ -962,7 +962,7 @@
 
     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Categories: <strong style="color:var(--text-primary)">AI Tools</strong> → <strong style="color:var(--text-primary)">Databases</strong> → <strong style="color:var(--text-primary)">Editors</strong> → <strong style="color:var(--text-primary)">Productivity Apps</strong> → <strong style="color:var(--text-primary)">Web &amp; JS Tools</strong></p>
 
-    <div class="code-block"><span class="comment"># Skip all menus — install every default, no interaction</span>
+    <div class="code-block"><span class="comment"># Auto-upgrade already-installed tools without prompting</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --yes</div>
 
     <div class="code-block"><span class="comment"># Just the essentials — languages and shell tools only</span>
@@ -988,7 +988,7 @@
         <tbody>
           <tr>
             <td>--yes, -y</td>
-            <td>Skips all menus — installs every default-selected tool with no interaction. Ideal for re-runs.</td>
+            <td>Auto-answers yes to upgrade prompts for already-installed tools. The selection menus still appear.</td>
           </tr>
           <tr>
             <td>--minimal</td>

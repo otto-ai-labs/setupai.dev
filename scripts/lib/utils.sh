@@ -125,8 +125,10 @@ checkbox_select() {
         fi
     done
 
-    # Non-interactive / --yes: return defaults immediately without drawing UI
-    if [[ "${UPGRADE_ALL:-false}" == true ]] || [[ ! -t 1 ]]; then
+    # Non-interactive only (CI/pipe): return defaults immediately without drawing UI
+    # NOTE: UPGRADE_ALL (--yes) intentionally does NOT skip the menu —
+    # --yes only controls upgrade prompts for already-installed tools.
+    if [[ ! -t 1 ]]; then
         for i in "${!keys[@]}"; do
             [[ "${selected[$i]}" -eq 1 ]] && echo "${keys[$i]}"
         done

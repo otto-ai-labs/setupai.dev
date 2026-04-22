@@ -356,7 +356,7 @@ Each tool has a sensible default (shown as `[x]`). Just press **Enter** through 
 ```
 ./setup.sh [OPTIONS]
 
-  --yes, -y          Skip all menus — auto-select every default, no prompts
+  --yes, -y          Auto-answer yes to upgrade prompts for already-installed tools
   --minimal          Essentials only — languages + shell. Skips all menus entirely
   --skip-ai-tools    Skip the AI tools category entirely
   --skip-databases   Skip the databases category entirely
@@ -369,13 +369,13 @@ Each tool has a sensible default (shown as `[x]`). Just press **Enter** through 
 Flags go **after** the closing parenthesis:
 
 ```bash
-# Skip all menus — install every default, no interaction
+# Auto-upgrade already-installed tools without prompting
 bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes
 
-# Skip all menus and skip databases
+# Auto-upgrade and skip databases category
 bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes --skip-databases
 
-# Skip all menus and skip web tools
+# Auto-upgrade and skip web tools
 bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes --skip-web
 ```
 
