@@ -123,8 +123,17 @@ echo ""
 # ── Homebrew ─────────────────────────────────────────────────────────────────
 log_info "Checking Homebrew..."
 if command_exists brew; then
-    log_success "Homebrew already installed — updating..."
-    brew update && brew upgrade
+    log_success "Homebrew already installed — running brew update..."
+    brew update
+    if [[ "${UPGRADE_ALL:-false}" == true ]]; then
+        log_info "Upgrading all outdated formulae (--yes)..."
+        brew upgrade
+    else
+        outdated=$(brew outdated --quiet 2>/dev/null | wc -l | tr -d ' ')
+        if [[ "$outdated" -gt 0 ]]; then
+            log_info "$outdated outdated formulae — run './setup.sh --yes' to upgrade all, or 'brew upgrade' manually"
+        fi
+    fi
 else
     log_info "Installing Homebrew..."
     # SECURITY NOTE: Review https://github.com/Homebrew/install before running.

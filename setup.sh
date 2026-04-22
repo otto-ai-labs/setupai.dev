@@ -110,7 +110,7 @@ if [[ "$MINIMAL" == false ]]; then
     echo ""
     log_info "========================================="
     log_info "  Select tools to install"
-    log_info "  (Space toggle · A all · N none · Enter confirm)"
+    log_info "  (Up/Down move · Space/Enter toggle · D done · A all · N none)"
     log_info "========================================="
     echo ""
 
