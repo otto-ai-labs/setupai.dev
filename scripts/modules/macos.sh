@@ -33,6 +33,10 @@ echo ""
 ################################################################################
 log_info "Step 14: Cleaning up Homebrew cache..."
 # FIX: brew cleanup reclaims disk space from cached downloads (can be several GB)
-brew cleanup
-log_success "Homebrew cache cleaned"
+if command -v brew &>/dev/null; then
+    brew cleanup || true
+    log_success "Homebrew cache cleaned"
+else
+    log_warning "Homebrew not found — skipping cleanup"
+fi
 echo ""

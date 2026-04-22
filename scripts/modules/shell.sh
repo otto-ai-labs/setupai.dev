@@ -15,11 +15,13 @@ fi
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
-    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions" \
+        || log_warning "zsh-autosuggestions install failed — skipping"
 fi
 
 if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" \
+        || log_warning "zsh-syntax-highlighting install failed — skipping"
 fi
 
 # Backup existing .zshrc

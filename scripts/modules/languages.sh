@@ -46,8 +46,10 @@ if [ ! -d "$HOME/.nvm" ]; then
     # FIX: Fetch latest nvm version dynamically.
     # SECURITY NOTE: curl|bash — review https://github.com/nvm-sh/nvm first.
     NVM_VERSION=$(curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+    NVM_VERSION="${NVM_VERSION:-v0.40.1}"   # fallback if GitHub API is unavailable
     log_info "Installing nvm ${NVM_VERSION}..."
-    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash
+    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash \
+        || log_warning "nvm install failed — visit https://github.com/nvm-sh/nvm to install manually"
 fi
 
 # FIX: Explicitly source nvm.sh — exporting NVM_DIR alone is not enough.

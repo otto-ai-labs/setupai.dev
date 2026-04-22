@@ -68,7 +68,7 @@ echo ""
 if [[ "$1" == "--force" || "$1" == "-f" ]]; then
     doSync
 else
-    read -p "Continue? (y/n) " -n 1 -r
+    read -p "Continue? (y/n) " -n 1 -r </dev/tty
     echo ""
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         doSync

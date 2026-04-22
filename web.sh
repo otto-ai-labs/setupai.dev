@@ -75,11 +75,14 @@ echo "------------------------------------------------------"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-if ! command_exists nvm; then
+if [ ! -d "$HOME/.nvm" ]; then
     log_info "Installing nvm..."
     # SECURITY NOTE: Review https://github.com/nvm-sh/nvm before running.
+    # nvm is a shell function, not a binary — use directory check not command_exists
     NVM_VERSION=$(curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
-    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash
+    NVM_VERSION="${NVM_VERSION:-v0.40.1}"   # fallback if GitHub API is unavailable
+    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash \
+        || log_warning "nvm install failed — visit https://github.com/nvm-sh/nvm to install manually"
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 fi

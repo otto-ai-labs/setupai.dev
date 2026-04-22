@@ -166,8 +166,8 @@ fi
 brew_install uv
 
 if command_exists pip3; then
-    pip3 install --upgrade pip
-    pip3 install virtualenv
+    pip3 install --upgrade pip || true
+    pip3 install virtualenv || true
 fi
 echo ""
 
@@ -177,8 +177,10 @@ echo "------------------------------------------------------"
 if [ ! -d "$HOME/.nvm" ]; then
     # SECURITY NOTE: Review https://github.com/nvm-sh/nvm before running.
     NVM_VERSION=$(curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+    NVM_VERSION="${NVM_VERSION:-v0.40.1}"   # fallback if GitHub API is unavailable
     log_info "Installing nvm $NVM_VERSION..."
-    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash
+    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash \
+        || log_warning "nvm install failed — visit https://github.com/nvm-sh/nvm to install manually"
 fi
 
 export NVM_DIR="$HOME/.nvm"
