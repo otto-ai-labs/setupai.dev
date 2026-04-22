@@ -181,7 +181,8 @@ run_module shell.sh
 run_module macos.sh
 
 # osx.sh: macOS system defaults tuned for developers
-bash "$SCRIPT_DIR/osx.sh"
+# TODO: disabled until interactive tool selection is implemented
+# bash "$SCRIPT_DIR/osx.sh"
 
 # web.sh: JS/web dev stack (Node, pnpm, TypeScript, ESLint, Vite, Bruno)
 if [[ "$SKIP_WEB" == false ]] && [[ "$MINIMAL" == false ]]; then
