@@ -25,7 +25,19 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 # (suppresses their own sudo keepalive and standalone banners/footers)
 export SETUP_RUNNING=1
 
-# ── Resolve script directory (works whether run directly or via curl|bash) ───
+# ── Resolve script directory ─────────────────────────────────────────────────
+# When run via `bash <(curl ...)`, BASH_SOURCE[0] resolves to /dev/fd/N —
+# a file descriptor, not a real path — so relative sources and bash sub-scripts
+# all fail. Detect this case, clone the full repo, and re-exec from disk.
+if [[ "${BASH_SOURCE[0]}" == /dev/fd/* ]] || [[ "${BASH_SOURCE[0]}" == /proc/self/fd/* ]]; then
+    REPO_URL="https://github.com/otto-ai-labs/setupai.dev.git"
+    TMP_DIR="$(mktemp -d)"
+    echo "[INFO] Running via curl — cloning repo to $TMP_DIR ..."
+    git clone --depth=1 "$REPO_URL" "$TMP_DIR" 2>&1 | grep -v "^$"
+    echo "[INFO] Re-executing setup from cloned repo..."
+    exec bash "$TMP_DIR/setup.sh" "$@"
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── Load shared utilities ────────────────────────────────────────────────────
