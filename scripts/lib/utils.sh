@@ -109,7 +109,9 @@ checkbox_select() {
     local items=("$@")   # "KEY|Label|desc|default"
 
     local n=${#items[@]}
-    local -a keys labels descs selected
+    # Use indexed arrays with plain variables for bash 3.2 compatibility
+    local keys=() labels=() descs=() selected=()
+    local i k l d def
 
     for i in "${!items[@]}"; do
         IFS='|' read -r k l d def <<< "${items[$i]}"
@@ -123,108 +125,107 @@ checkbox_select() {
         fi
     done
 
-    # Non-interactive / --yes: return defaults immediately
-    if [[ "${UPGRADE_ALL:-false}" == true ]] || [[ ! -t 0 ]]; then
+    # Non-interactive / --yes: return defaults immediately without drawing UI
+    if [[ "${UPGRADE_ALL:-false}" == true ]] || [[ ! -t 1 ]]; then
         for i in "${!keys[@]}"; do
             [[ "${selected[$i]}" -eq 1 ]] && echo "${keys[$i]}"
         done
         return
     fi
 
-    # Save terminal state, enable raw input
-    local saved_tty
-    saved_tty=$(stty -g </dev/tty)
-    stty raw -echo </dev/tty
+    # Build escape sequences at runtime — bash 3.2 $'...' in case patterns
+    # is unreliable; comparing assembled strings works correctly.
+    local ESC=$'\033'
+    local UP="${ESC}[A"
+    local DOWN="${ESC}[B"
+    local SEP="----------------------------------------------------------------"
 
-    local cursor=0   # which row the highlight is on
+    local cursor=0
+    local total_lines=$(( n + 5 ))
 
     _cb_draw() {
-        # Move cursor to top of our block and redraw
-        local i
-        # Title
-        tput el </dev/tty
-        printf "\r  ${BLUE}%s${NC}\n" "$title" >/dev/tty
-        tput el </dev/tty
-        printf "\r  ${NC}%s${NC}\n" "$subtitle" >/dev/tty
-        tput el </dev/tty
-        printf "\r  %s\n" "$(printf '%0.s─' {1..60})" >/dev/tty
-
+        local i box
+        tput cuu "$total_lines" >/dev/tty
+        printf "\r  \033[0;34m%-60s\033[0m\n" "$title" >/dev/tty
+        printf "\r  %-60s\n" "$subtitle" >/dev/tty
+        printf "\r  %s\n" "$SEP" >/dev/tty
         for i in "${!keys[@]}"; do
-            tput el </dev/tty
-            local box desc_text
             if [[ "${selected[$i]}" -eq 1 ]]; then
-                box="${GREEN}[x]${NC}"
+                box="\033[0;32m[x]\033[0m"
             else
                 box="[ ]"
             fi
             if [[ "$i" -eq "$cursor" ]]; then
-                printf "\r  ${YELLOW}▶ %b %-22s${NC} %s\n" \
+                printf "\r  \033[1;33m> %b %-24s\033[0m %s\n" \
                     "$box" "${labels[$i]}" "${descs[$i]}" >/dev/tty
             else
-                printf "\r    %b %-22s${NC} %s\n" \
+                printf "\r    %b %-24s %s\n" \
                     "$box" "${labels[$i]}" "${descs[$i]}" >/dev/tty
             fi
         done
-        tput el </dev/tty
-        printf "\r  %s\n" "$(printf '%0.s─' {1..60})" >/dev/tty
-        tput el </dev/tty
-        printf "\r  ${NC}↑/↓ move  Space toggle  A all  N none  Enter confirm${NC}\n" >/dev/tty
-
-        # Move back up to redraw next time
-        local total_lines=$(( n + 5 ))
-        tput cuu "$total_lines" </dev/tty
+        printf "\r  %s\n" "$SEP" >/dev/tty
+        printf "\r  \033[0;90mUp/Down: move  Space/Enter: toggle  D: done  A: all  N: none\033[0m\n" >/dev/tty
     }
 
-    # Initial draw
-    printf '\n%.0s' {1..20} >/dev/tty   # reserve space
-    local total_lines=$(( n + 5 ))
-    tput cuu "$total_lines" </dev/tty
+    # Reserve space for the menu then draw it
+    for i in $(seq 1 $total_lines); do printf '\n' >/dev/tty; done
     _cb_draw
 
-    while true; do
-        local key
-        # Read one char; handle escape sequences (arrow keys = ESC [ A/B)
-        IFS= read -r -s -n1 key </dev/tty
-        if [[ "$key" == $'\x1b' ]]; then
-            IFS= read -r -s -n1 -t 0.1 seq1 </dev/tty
-            IFS= read -r -s -n1 -t 0.1 seq2 </dev/tty
-            key="${key}${seq1}${seq2}"
-        fi
+    # Save terminal state and switch to raw input
+    local saved_tty
+    saved_tty=$(stty -g </dev/tty)
+    stty -echo -icanon min 1 time 0 </dev/tty
 
-        case "$key" in
-            $'\x1b[A'|k|K)   # Up arrow or k
+    while true; do
+        local c1 c2 c3
+        # Read one byte at a time from /dev/tty
+        IFS= read -r -s -n1 c1 </dev/tty
+
+        if [[ "$c1" == "$ESC" ]]; then
+            # Read two more bytes for escape sequence (arrow keys)
+            IFS= read -r -s -n1 c2 </dev/tty
+            IFS= read -r -s -n1 c3 </dev/tty
+            local seq="${c1}${c2}${c3}"
+            if [[ "$seq" == "$UP" ]]; then
                 (( cursor > 0 )) && (( cursor-- ))
-                ;;
-            $'\x1b[B'|j|J)   # Down arrow or j
+            elif [[ "$seq" == "$DOWN" ]]; then
                 (( cursor < n - 1 )) && (( cursor++ ))
-                ;;
-            ' ')              # Space — toggle
-                if [[ "${selected[$cursor]}" -eq 1 ]]; then
-                    selected[$cursor]=0
-                else
-                    selected[$cursor]=1
-                fi
-                ;;
-            a|A)              # Select all
-                for i in "${!keys[@]}"; do selected[$i]=1; done
-                ;;
-            n|N)              # Deselect all
-                for i in "${!keys[@]}"; do selected[$i]=0; done
-                ;;
-            $'\r'|$'\n'|'')  # Enter — confirm
-                break
-                ;;
-        esac
+            fi
+        else
+            case "$c1" in
+                ' ')          # Space — toggle current item
+                    if [[ "${selected[$cursor]}" -eq 1 ]]; then
+                        selected[$cursor]=0
+                    else
+                        selected[$cursor]=1
+                    fi
+                    ;;
+                '')           # Enter — toggle current item
+                    if [[ "${selected[$cursor]}" -eq 1 ]]; then
+                        selected[$cursor]=0
+                    else
+                        selected[$cursor]=1
+                    fi
+                    ;;
+                d|D)          # D — done/confirm
+                    break
+                    ;;
+                a|A)          # A — select all
+                    for i in "${!keys[@]}"; do selected[$i]=1; done
+                    ;;
+                n|N)          # N — deselect all
+                    for i in "${!keys[@]}"; do selected[$i]=0; done
+                    ;;
+            esac
+        fi
         _cb_draw
     done
 
-    # Restore terminal, move past the drawn block
+    # Restore terminal state
     stty "$saved_tty" </dev/tty
-    local total_lines=$(( n + 5 ))
-    tput cud "$total_lines" </dev/tty
     printf '\n' >/dev/tty
 
-    # Output selected keys to stdout (caller captures with mapfile/read)
+    # Output selected keys to stdout
     for i in "${!keys[@]}"; do
         [[ "${selected[$i]}" -eq 1 ]] && echo "${keys[$i]}"
     done

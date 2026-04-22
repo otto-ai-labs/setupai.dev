@@ -56,7 +56,7 @@ You can walk away during most of the installation. Just stay nearby in case a po
 
 Open the **Terminal** app (press **Cmd + Space**, type **Terminal**, press Enter) and paste one of the following commands.
 
-> **New:** The script now shows an interactive menu before installing. Use **↑/↓** to move, **Space** to toggle, **A** to select all, **N** to deselect all, and **Enter** to confirm each category.
+> **New:** The script now shows an interactive menu before installing. Use **↑/↓** to move, **Space** or **Enter** to toggle, **D** to confirm, **A** to select all, **N** to deselect all.
 
 ### Option A — Run directly (fastest)
 
@@ -344,7 +344,7 @@ By default the script shows a checkbox menu before installing anything. You choo
   [x] GitHub CLI            Manage repos, PRs and issues from the terminal
   [ ] ngrok                 Expose localhost to the internet
   ────────────────────────────────────────────────────────────
-  ↑/↓ move  Space toggle  A all  N none  Enter confirm
+  Up/Down: move  Space/Enter: toggle  D: done  A: all  N: none
 ```
 
 Categories presented: **AI Tools → Databases → Editors → Productivity Apps → Web & JS Tools**
