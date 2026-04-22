@@ -186,8 +186,9 @@ defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 # Show the ~/Library folder
 chflags nohidden ~/Library 2>/dev/null || true
 
-# Show the /Volumes folder
-sudo chflags nohidden /Volumes 2>/dev/null || true
+# NOTE: sudo chflags nohidden /Volumes triggers a TCC privacy popup on
+# macOS Ventura+ which can kill the terminal session. Skipped intentionally.
+# /Volumes is visible in Finder via Go → Computer without this change.
 
 # Expand File Info panes: General, Open with, Sharing & Permissions
 defaults write com.apple.finder FXInfoPanesExpanded -dict \
