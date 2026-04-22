@@ -9,6 +9,15 @@ fi
 
 log_info "Step 6: Installing AI development tools..."
 
+# Ensure nvm and npm are available in this session before running npm installs
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+if ! command_exists npm; then
+    log_warning "npm not found — skipping npm-based AI tools (Claude Code, Codex)"
+    log_warning "Run 'source ~/.zshrc' then re-run this script to install them"
+fi
+
 # Ollama — run large language models locally
 if command_exists ollama; then
     log_success "Ollama already installed"
@@ -18,20 +27,23 @@ else
 fi
 
 # Claude Code — Anthropic's official AI coding CLI
-# npm must be available (installed via nvm in languages.sh)
-if command_exists claude; then
-    log_success "Claude Code already installed"
-else
-    log_info "Installing Claude Code (Anthropic AI coding CLI)..."
-    npm install -g @anthropic-ai/claude-code || true
+if command_exists npm; then
+    if command_exists claude; then
+        log_success "Claude Code already installed ($(claude --version 2>/dev/null || echo 'ok'))"
+    else
+        log_info "Installing Claude Code (Anthropic AI coding CLI)..."
+        npm install -g @anthropic-ai/claude-code || log_warning "Claude Code install failed — run: npm install -g @anthropic-ai/claude-code"
+    fi
 fi
 
 # OpenAI Codex CLI
-if command_exists codex; then
-    log_success "OpenAI Codex CLI already installed"
-else
-    log_info "Installing OpenAI Codex CLI..."
-    npm install -g @openai/codex || true
+if command_exists npm; then
+    if command_exists codex; then
+        log_success "OpenAI Codex CLI already installed"
+    else
+        log_info "Installing OpenAI Codex CLI..."
+        npm install -g @openai/codex || log_warning "Codex CLI install failed — run: npm install -g @openai/codex"
+    fi
 fi
 
 # AWS CLI — useful for AI services (Bedrock, SageMaker)
