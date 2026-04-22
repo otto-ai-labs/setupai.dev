@@ -14,6 +14,10 @@
 # Note: We don't use 'set -e' because we want to continue installing other packages
 # even if some fail or timeout. Each installation handles errors gracefully.
 
+# Keep sudo alive for the duration of the script so long installs don't time out
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -612,6 +616,10 @@ alias jn='jupyter notebook'
 
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Personal overrides — API keys, custom aliases, private config
+# Create ~/.extra and put anything you don't want in version control there
+[ -f ~/.extra ] && source ~/.extra
 
 # === End ai-dev-setup Config ===
 EOF
