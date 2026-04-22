@@ -51,8 +51,9 @@ fi
 # ── General UI / UX ──────────────────────────────────────────────────────────
 log_info "General UI / UX..."
 
-# Disable the sound effects on boot
-sudo nvram SystemAudioVolume=" "
+# NOTE: Disabling boot sound via nvram triggers a TCC privacy popup on
+# macOS Ventura+ which can kill the terminal session. Skipped intentionally.
+# To disable boot sound manually: System Settings → Sound → uncheck "Play sound on startup"
 
 # Always show scrollbars
 defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
