@@ -37,6 +37,12 @@ else
     echo 'plugins=(git python zsh-autosuggestions zsh-syntax-highlighting)' >> "$HOME/.zshrc"
 fi
 
+# Patch existing installs — add python/pip aliases if missing
+if grep -q "# === ai-dev-setup Config ===" "$HOME/.zshrc" && ! grep -q "alias python=" "$HOME/.zshrc"; then
+    sed -i '' "s/# Jupyter aliases/# Python aliases — Homebrew installs python3, not python\nalias python='python3'\nalias pip='pip3'\n\n# Jupyter aliases/" "$HOME/.zshrc"
+    log_success "Added python/pip aliases to existing ~/.zshrc"
+fi
+
 # Append config block (idempotent — skipped if marker already present)
 if ! grep -q "# === ai-dev-setup Config ===" "$HOME/.zshrc"; then
     cat >> "$HOME/.zshrc" << EOF
@@ -58,6 +64,10 @@ export PATH="\$HOME/.local/bin:\$PATH"
 # Run 'starship preset plain-text > ~/.config/starship.toml'
 # or visit https://starship.rs/presets/ to customise your prompt theme.
 command -v starship &>/dev/null && eval "\$(starship init zsh)"
+
+# Python aliases — Homebrew installs python3, not python
+alias python='python3'
+alias pip='pip3'
 
 # Jupyter aliases
 alias jl='jupyter lab'
