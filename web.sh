@@ -32,11 +32,27 @@ log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
 
 command_exists() { command -v "$1" &>/dev/null; }
 
+prompt_upgrade() {
+    local name="$1"
+    local version="$2"
+    local answer
+    echo -e "${YELLOW}[UPGRADE]${NC} $name is already installed (${version})"
+    read -r -p "         Upgrade to latest? [y/N] " answer </dev/tty
+    [[ "$answer" =~ ^[Yy]$ ]]
+}
+
 npm_global_install() {
     local pkg="$1"
     local cmd="${2:-$1}"   # optional: command name if different from package name
     if command_exists "$cmd"; then
-        log_success "$pkg already installed ($(${cmd} --version 2>/dev/null || echo 'ok'))"
+        local ver
+        ver=$("$cmd" --version 2>/dev/null || echo 'installed')
+        if prompt_upgrade "$pkg" "$ver"; then
+            log_info "Upgrading $pkg..."
+            npm install -g "$pkg" || log_warning "Failed to upgrade $pkg — skipping"
+        else
+            log_success "$pkg skipped"
+        fi
     else
         log_info "Installing $pkg globally..."
         npm install -g "$pkg" || log_warning "Failed to install $pkg — skipping"
@@ -87,7 +103,11 @@ echo ""
 log_info "Installing pnpm..."
 echo "------------------------------------------------------"
 if command_exists pnpm; then
-    log_success "pnpm already installed ($(pnpm --version))"
+    if prompt_upgrade "pnpm" "$(pnpm --version)"; then
+        npm install -g pnpm || log_warning "Failed to upgrade pnpm — skipping"
+    else
+        log_success "pnpm skipped"
+    fi
 else
     npm install -g pnpm || log_warning "pnpm install failed — skipping"
 fi

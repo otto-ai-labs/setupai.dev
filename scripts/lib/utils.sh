@@ -18,6 +18,18 @@ command_exists() {
     command -v "$1" &>/dev/null
 }
 
+# Ask whether to upgrade an already-installed tool.
+# Usage: prompt_upgrade "git" "2.43.0"
+# Returns 0 (yes) or 1 (no/skip)
+prompt_upgrade() {
+    local name="$1"
+    local version="$2"
+    local answer
+    echo -e "${YELLOW}[UPGRADE]${NC} $name is already installed (${version})"
+    read -r -p "         Upgrade to latest? [y/N] " answer </dev/tty
+    [[ "$answer" =~ ^[Yy]$ ]]
+}
+
 # Custom timeout — macOS has no native `timeout` command.
 run_with_timeout() {
     local timeout_duration=$1

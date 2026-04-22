@@ -37,10 +37,26 @@ log_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
 
 command_exists() { command -v "$1" &>/dev/null; }
 
+prompt_upgrade() {
+    local name="$1"
+    local version="$2"
+    local answer
+    echo -e "${YELLOW}[UPGRADE]${NC} $name is already installed (${version})"
+    read -r -p "         Upgrade to latest? [y/N] " answer </dev/tty
+    [[ "$answer" =~ ^[Yy]$ ]]
+}
+
 brew_install() {
     local pkg="$1"
     if brew list "$pkg" &>/dev/null; then
-        log_success "$pkg already installed"
+        local ver
+        ver=$(brew info --json=v1 "$pkg" 2>/dev/null | grep '"installed"' -A2 | grep '"version"' | head -1 | cut -d'"' -f4)
+        if prompt_upgrade "$pkg" "${ver:-installed}"; then
+            log_info "Upgrading $pkg..."
+            brew upgrade "$pkg" || log_warning "Failed to upgrade $pkg — skipping"
+        else
+            log_success "$pkg skipped"
+        fi
     else
         log_info "Installing $pkg..."
         brew install "$pkg" || log_warning "Failed to install $pkg — skipping"
@@ -50,7 +66,14 @@ brew_install() {
 brew_cask_install() {
     local pkg="$1"
     if brew list --cask "$pkg" &>/dev/null; then
-        log_success "$pkg already installed"
+        local ver
+        ver=$(brew info --cask --json=v1 "$pkg" 2>/dev/null | grep '"version"' | head -1 | cut -d'"' -f4)
+        if prompt_upgrade "$pkg (cask)" "${ver:-installed}"; then
+            log_info "Upgrading $pkg..."
+            brew upgrade --cask "$pkg" || log_warning "Failed to upgrade $pkg — skipping"
+        else
+            log_success "$pkg skipped"
+        fi
     else
         log_info "Installing $pkg (cask)..."
         brew install --cask "$pkg" || log_warning "Failed to install $pkg — skipping"
