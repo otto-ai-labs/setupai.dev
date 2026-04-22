@@ -167,6 +167,8 @@ jn   # → jupyter notebook
 | **Codex CLI** | OpenAI's coding CLI. Installed via npm. Requires OpenAI API key. |
 | **AWS CLI** | Access Amazon Bedrock, SageMaker, and other AWS AI services from the terminal. |
 | **Terraform** | Infrastructure as code — create and manage AI infrastructure programmatically. |
+| **GitHub CLI (`gh`)** | Manage repos, pull requests, issues, and GitHub Actions from the terminal. |
+| **ngrok** | Expose a localhost port to the internet — ideal for webhooks, demos, and sharing. |
 
 > **Docker:** The script does not auto-install Docker as it requires a manual GUI setup. Download Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/).
 
@@ -181,21 +183,41 @@ jn   # → jupyter notebook
 | **PostgreSQL 15** | The most popular open-source relational database. |
 | **Redis** | Lightning-fast in-memory store for caching, queues, and session data. |
 | **SQLite** | Lightweight embedded database — ideal for local AI apps and prototypes. |
+| **DuckDB** | In-process analytical database — fast SQL on files and dataframes, no server needed. |
 
 > Databases are installed but **not auto-started**. Run `brew services start postgresql@15` only when you need them. This keeps your Mac fast.
 
 ---
 
-### Editors & Productivity
+### Editors
 *Where you'll write your code.*
 
 | Tool | What it does |
 |------|-------------|
 | **Visual Studio Code** | The most popular free code editor. Installed with Python, Jupyter, Claude, and GitHub Copilot extensions. |
-| **iTerm2** | A better terminal app — tabs, split panes, themes, and much more. |
-| **Rectangle** | Snap windows to halves, thirds, and corners using keyboard shortcuts. |
+| **Cursor** | AI-native code editor (VS Code fork) with built-in AI chat, autocomplete, and multi-file editing. |
 
 > **VS Code extensions installed:** `ms-python.python`, `ms-toolsai.jupyter`, `anthropic.claude`, `github.copilot`. The `code` CLI is only available after you open VS Code at least once.
+
+---
+
+### Productivity Apps
+*Apps that make your Mac faster and more enjoyable to use.*
+
+| Tool | What it does |
+|------|-------------|
+| **Raycast** | Spotlight replacement with AI, clipboard history, window management, and hundreds of extensions. |
+| **Warp** | AI-powered terminal — natural language commands, autocomplete, and a modern UI. |
+| **LM Studio** | GUI app to discover, download, and run local AI models — no terminal knowledge required. |
+| **iTerm2** | Classic terminal emulator — tabs, split panes, themes, and scripting. |
+| **Rectangle** | Snap windows to halves, thirds, and corners using keyboard shortcuts. |
+| **AltTab** | Windows-style app switcher with live window previews. |
+| **Obsidian** | Local-first markdown notes and knowledge base — great for building RAG pipelines and personal docs. |
+| **DBeaver** | Universal database GUI — browse and query PostgreSQL, SQLite, Redis, and more without the terminal. |
+| **TablePlus** | Fast, native Mac database GUI with a clean interface. |
+| **Bartender** | Organise and hide cluttered menu bar icons. |
+| **Lungo** | Keep your Mac awake during long installs or downloads. |
+| **Shottr** | Lightweight screenshot tool with annotations, measurement, and OCR. |
 
 ---
 
@@ -262,7 +284,6 @@ jn   # → jupyter notebook
 - `.DS_Store` files suppressed on network and USB volumes
 - Default view set to **List view**
 - `~/Library` folder visible
-- `/Volumes` folder visible
 
 ### Dock & Mission Control
 - Dock icon size: 48px, magnified size: 72px
@@ -364,8 +385,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/mai
 | macOS defaults | No — always applied |
 | AI tools (Ollama, Claude Code, Codex) | **Yes** |
 | Databases (PostgreSQL, Redis, SQLite) | **Yes** |
-| Editors (VS Code) | **Yes** |
-| Apps (iTerm2, Rectangle) | **Yes** |
+| Editors (VS Code, Cursor) | **Yes** |
+| Apps (Raycast, Warp, LM Studio, Obsidian, DBeaver, AltTab, Bartender, Lungo, Shottr…) | **Yes** |
 | Web tools (TypeScript, ESLint, pnpm…) | **Yes** |
 
 ---
@@ -534,6 +555,23 @@ brew install uv
 
 **VS Code `code` command not found**
 Open Visual Studio Code from your Applications folder at least once. This registers the `code` CLI automatically.
+
+**`gh` command not found**
+```bash
+source ~/.zshrc
+brew install gh
+```
+
+**`ngrok` command not found**
+```bash
+source ~/.zshrc
+brew install ngrok/ngrok/ngrok
+```
+
+**`duckdb` command not found**
+```bash
+brew install duckdb
+```
 
 **Python version confusion (3.11 vs 3.12)**
 Both are installed. Use the specific binary when you need a particular version:
