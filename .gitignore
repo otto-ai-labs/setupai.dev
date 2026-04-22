@@ -1,29 +1,41 @@
-# IntelliJ IDEA IDE
-.idea
-
-# Compiled Python files
-*.pyc
-
-# Folder view configuration files
+# macOS
 .DS_Store
-Desktop.ini
-
-# Thumbnail cache files
+.DS_Store?
 ._*
-Thumbs.db
-
-# Files that might appear on external disks
 .Spotlight-V100
 .Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
 
-# Files that contain credentials or personal info
+# Script log files (generated at runtime in $HOME)
+*.log
+
+# Backup files created by setup.sh
+*.backup.*
+
+# Personal overrides — never commit credentials or private config
 .extra
+.env
+.env.*
+.s3cfg
 .boto
 .mrjob.conf
-.s3cfg
 .aws/
 
-# Repo scratch directory
+# Editor directories
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Local scratch directory
 scratch/
 
+# Claude Code
 .claude/
