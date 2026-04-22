@@ -29,6 +29,13 @@ else
     log_success "sqlite3 already installed"
 fi
 
+# DuckDB — fast in-process analytical database (no server needed)
+if ! brew list duckdb &>/dev/null; then
+    brew_install_with_timeout duckdb || true
+else
+    log_success "duckdb already installed"
+fi
+
 log_success "Database tools installed"
 log_info "Note: Databases are not auto-started. Use 'brew services start <db>' when needed"
 echo ""

@@ -37,5 +37,12 @@ else
     log_info "  code --install-extension github.copilot"
 fi
 
+# Cursor — AI-native code editor (VS Code fork with built-in AI features)
+if [ -d "/Applications/Cursor.app" ]; then
+    log_success "Cursor already installed"
+else
+    brew_install_cask_with_timeout cursor || true
+fi
+
 log_success "IDEs and editors installed"
 echo ""

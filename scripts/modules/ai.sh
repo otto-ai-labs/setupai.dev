@@ -69,5 +69,19 @@ else
     log_warning "Docker requires manual installation — visit docker.com to download Docker Desktop"
 fi
 
+# GitHub CLI — manage repos, PRs, issues, and Actions from the terminal
+if command_exists gh; then
+    log_success "GitHub CLI already installed ($(gh --version 2>/dev/null | head -1))"
+else
+    brew_install_with_timeout gh || true
+fi
+
+# ngrok — expose localhost to the internet (webhooks, demos, sharing)
+if command_exists ngrok; then
+    log_success "ngrok already installed"
+else
+    brew_install_with_timeout ngrok/ngrok/ngrok || true
+fi
+
 log_success "AI development tools installed"
 echo ""
