@@ -41,10 +41,13 @@ Go to **System Settings → General → Software Update** and install any pendin
 **2. Have your Git details ready**
 The script will ask for your name and email address to configure Git. Use the same name and email as your GitHub account.
 
-**3. Make sure you have a stable internet connection**
+**3. Decide which tools you want**
+The script shows a checkbox menu for each category (AI tools, databases, editors, apps). You pick what to install. If you're not sure, just press **Enter** to accept the recommended defaults.
+
+**4. Make sure you have a stable internet connection**
 The script downloads several gigabytes of tools. A wired or strong Wi-Fi connection is recommended.
 
-**4. Set aside 30–60 minutes**
+**5. Set aside 30–60 minutes**
 You can walk away during most of the installation. Just stay nearby in case a popup asks for your password.
 
 ---
@@ -52,6 +55,8 @@ You can walk away during most of the installation. Just stay nearby in case a po
 ## Quick Start
 
 Open the **Terminal** app (press **Cmd + Space**, type **Terminal**, press Enter) and paste one of the following commands.
+
+> **New:** The script now shows an interactive menu before installing. Use **↑/↓** to move, **Space** to toggle, **A** to select all, **N** to deselect all, and **Enter** to confirm each category.
 
 ### Option A — Run directly (fastest)
 
@@ -324,16 +329,38 @@ jn   # → jupyter notebook
 
 ## Installation Options
 
-You can customise what gets installed by adding flags.
+### Interactive tool selection
+
+By default the script shows a checkbox menu before installing anything. You choose exactly which tools you want in each category:
+
+```
+  AI Tools  —  Tools for building and running AI applications
+  ────────────────────────────────────────────────────────────
+▶ [x] Ollama                Run LLMs locally — Llama, Mistral, Gemma
+  [x] Claude Code           Anthropic AI coding CLI
+  [x] Codex CLI             OpenAI coding CLI
+  [ ] AWS CLI               Access Bedrock, SageMaker and other AWS AI services
+  [ ] Terraform             Infrastructure as code for AI deployments
+  [x] GitHub CLI            Manage repos, PRs and issues from the terminal
+  [ ] ngrok                 Expose localhost to the internet
+  ────────────────────────────────────────────────────────────
+  ↑/↓ move  Space toggle  A all  N none  Enter confirm
+```
+
+Categories presented: **AI Tools → Databases → Editors → Productivity Apps → Web & JS Tools**
+
+Each tool has a sensible default (shown as `[x]`). Just press **Enter** through each menu to get a great out-of-the-box install. Or customise to exactly what you need.
+
+### Flags
 
 ```
 ./setup.sh [OPTIONS]
 
-  --yes, -y          Auto-upgrade all already-installed tools without prompting
-  --minimal          Essentials only — languages + shell. Skips AI tools, databases, editors, apps, web tools
-  --skip-ai-tools    Skip Ollama, Claude Code, Codex CLI, AWS CLI, Terraform
-  --skip-databases   Skip PostgreSQL, Redis, SQLite
-  --skip-web         Skip all web/JS tools (web.sh)
+  --yes, -y          Skip all menus — auto-select every default, no prompts
+  --minimal          Essentials only — languages + shell. Skips all menus entirely
+  --skip-ai-tools    Skip the AI tools category entirely
+  --skip-databases   Skip the databases category entirely
+  --skip-web         Skip the web/JS tools entirely
   --help             Show all available options
 ```
 
@@ -342,13 +369,13 @@ You can customise what gets installed by adding flags.
 Flags go **after** the closing parenthesis:
 
 ```bash
-# Re-run and upgrade everything without any prompts
+# Skip all menus — install every default, no interaction
 bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes
 
-# Fresh install skipping databases
-bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --skip-databases
+# Skip all menus and skip databases
+bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes --skip-databases
 
-# Upgrade everything, skip web tools
+# Skip all menus and skip web tools
 bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes --skip-web
 ```
 

@@ -763,19 +763,26 @@
       <div class="step-item">
         <div class="step-number">3</div>
         <div class="step-content">
-          <h3>Enter your details</h3>
+          <h3>Enter your Git details</h3>
           <p>The script will ask for your <strong>name</strong> and <strong>email address</strong>. Use the same ones as your GitHub account. These appear on your code commits.</p>
         </div>
       </div>
       <div class="step-item">
         <div class="step-number">4</div>
         <div class="step-content">
-          <h3>Wait while everything installs</h3>
-          <p>The script downloads and installs several gigabytes of tools. This can take <strong>30–60 minutes</strong> depending on your internet speed. You can walk away — just stay nearby in case your Mac asks for your password.</p>
+          <h3>Choose your tools</h3>
+          <p>A checkbox menu appears for each category — AI tools, databases, editors, and apps. Use <strong>↑/↓</strong> to move, <strong>Space</strong> to toggle, and <strong>Enter</strong> to confirm. Not sure? Just press <strong>Enter</strong> to accept the recommended defaults.</p>
         </div>
       </div>
       <div class="step-item">
         <div class="step-number">5</div>
+        <div class="step-content">
+          <h3>Wait while everything installs</h3>
+          <p>The script downloads and installs only the tools you selected. This can take <strong>20–60 minutes</strong> depending on what you chose and your internet speed. You can walk away — just stay nearby in case your Mac asks for your password.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">6</div>
         <div class="step-content">
           <h3>Restart your terminal and follow the next steps</h3>
           <p>When the script finishes, close the terminal window, open a fresh one, and follow the <a href="#after" style="color: var(--accent-cyan);">After Install</a> checklist below.</p>
@@ -936,22 +943,38 @@
 <section id="options">
   <div class="section-inner">
     <div class="section-label">Customise Your Install</div>
-    <h2 class="section-title">Installation options</h2>
-    <p class="section-sub">Add flags to the command to control what gets installed.</p>
+    <h2 class="section-title">You choose exactly what gets installed.</h2>
+    <p class="section-sub">Before installing anything, the script shows a checkbox menu for each category. Pick what you want — or just press Enter to accept the recommended defaults.</p>
 
-    <div class="code-block"><span class="comment"># Re-run and upgrade everything — no prompts</span>
+    <div class="code-block"><span class="comment"># What you'll see in the terminal before anything installs:</span>
+
+  AI Tools  —  Tools for building and running AI applications
+  ────────────────────────────────────────────────────────────
+▶ [x] Ollama                Run LLMs locally — Llama, Mistral, Gemma
+  [x] Claude Code           Anthropic AI coding CLI
+  [x] Codex CLI             OpenAI coding CLI
+  [ ] AWS CLI               Access Bedrock, SageMaker and other AWS AI services
+  [ ] Terraform             Infrastructure as code for AI deployments
+  [x] GitHub CLI            Manage repos, PRs and issues from the terminal
+  [ ] ngrok                 Expose localhost to the internet
+  ────────────────────────────────────────────────────────────
+  ↑/↓ move  Space toggle  A all  N none  Enter confirm</div>
+
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Categories: <strong style="color:var(--text-primary)">AI Tools</strong> → <strong style="color:var(--text-primary)">Databases</strong> → <strong style="color:var(--text-primary)">Editors</strong> → <strong style="color:var(--text-primary)">Productivity Apps</strong> → <strong style="color:var(--text-primary)">Web &amp; JS Tools</strong></p>
+
+    <div class="code-block"><span class="comment"># Skip all menus — install every default, no interaction</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --yes</div>
 
     <div class="code-block"><span class="comment"># Just the essentials — languages and shell tools only</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --minimal</div>
 
-    <div class="code-block"><span class="comment"># Skip AI tools (Ollama, Claude Code, Codex CLI)</span>
+    <div class="code-block"><span class="comment"># Skip the AI tools category entirely</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --skip-ai-tools</div>
 
     <div class="code-block"><span class="comment"># Skip local databases</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --skip-databases</div>
 
-    <div class="code-block"><span class="comment"># Skip web/JS tools (TypeScript, ESLint, pnpm, Bruno…)</span>
+    <div class="code-block"><span class="comment"># Skip web/JS tools entirely</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --skip-web</div>
 
     <div class="flags-table-wrap">
@@ -965,19 +988,19 @@
         <tbody>
           <tr>
             <td>--yes, -y</td>
-            <td>Auto-upgrades all already-installed tools without asking. Use on re-runs.</td>
+            <td>Skips all menus — installs every default-selected tool with no interaction. Ideal for re-runs.</td>
           </tr>
           <tr>
             <td>--minimal</td>
-            <td>Installs only languages and shell tools. Skips AI tools, databases, editors, apps, and web tools.</td>
+            <td>Skips all menus entirely. Installs only languages and shell tools.</td>
           </tr>
           <tr>
             <td>--skip-ai-tools</td>
-            <td>Skips Ollama, Claude Code, Codex CLI, AWS CLI, and Terraform.</td>
+            <td>Skips the AI tools category entirely (no menu shown).</td>
           </tr>
           <tr>
             <td>--skip-databases</td>
-            <td>Skips PostgreSQL, Redis, and SQLite.</td>
+            <td>Skips the databases category entirely (no menu shown).</td>
           </tr>
           <tr>
             <td>--skip-web</td>
