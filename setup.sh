@@ -1,10 +1,14 @@
 #!/bin/bash
 
 ################################################################################
-# Universal MacBook Setup Script for Software Engineering & Cloud DevOps
+# AI Dev Setup — Mac Setup Script
+# One script. AI development, ready to go.
 # Supports: Intel (x86_64) and Apple Silicon (arm64)
-# Author: otto-ai-labs/mac-setup contributors
+# Author: otto-ai-labs/setupai.dev contributors
 # License: MIT
+#
+# Run directly:
+#   bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)
 ################################################################################
 
 # Note: We don't use 'set -e' because we want to continue installing other packages
@@ -66,8 +70,8 @@ run_with_timeout() {
 }
 
 # Helper function to install brew packages with timeout
-# FIX: Increased timeout from 60s to 300s — large packages like go, azure-cli
-#      and python@3.12 easily exceed 60s on first install.
+# FIX: Increased timeout from 60s to 300s — large packages like python@3.12
+#      easily exceed 60s on first install.
 brew_install_with_timeout() {
     local timeout_duration=300
     local package="$1"
@@ -112,22 +116,22 @@ brew_install_cask_with_timeout() {
 }
 
 # Parse command line arguments
-SKIP_CLOUD=false
+SKIP_AI_TOOLS=false
 SKIP_DATABASES=false
 MINIMAL=false
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        --skip-cloud) SKIP_CLOUD=true ;;
+        --skip-ai-tools) SKIP_AI_TOOLS=true ;;
         --skip-databases) SKIP_DATABASES=true ;;
         --minimal) MINIMAL=true ;;
         --help)
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
-            echo "  --skip-cloud       Skip cloud provider tools (AWS, GCP, Azure)"
+            echo "  --skip-ai-tools    Skip AI tools (Ollama, Claude Code, Codex CLI)"
             echo "  --skip-databases   Skip database installations"
-            echo "  --minimal          Install only essential tools"
+            echo "  --minimal          Install only essential tools (languages + shell, no AI tools/databases/apps)"
             echo "  --help             Show this help message"
             exit 0
             ;;
@@ -151,7 +155,7 @@ read -p "Enter your Git email: " git_email </dev/tty
 echo ""
 
 # Setup logging to file (after interactive prompts)
-LOGFILE="$HOME/mac-setup_$(date +%Y%m%d_%H%M%S).log"
+LOGFILE="$HOME/ai-dev-setup_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$LOGFILE") 2>&1
 
 # Check if running on macOS
@@ -187,7 +191,7 @@ if [[ "$macos_major" -lt 11 ]]; then
 fi
 
 log_info "========================================="
-log_info "MacBook Setup Script"
+log_info "AI Dev Setup"
 log_info "========================================="
 log_info "Architecture: $ARCH_NAME ($ARCH)"
 log_info "macOS Version: $macos_version"
@@ -269,12 +273,6 @@ else
     log_success "starship already installed"
 fi
 
-if ! command_exists tmux; then
-    brew_install_with_timeout tmux
-else
-    log_success "tmux already installed"
-fi
-
 log_info "Installing modern CLI utilities..."
 declare -a cli_tools=("bat" "eza" "fd" "ripgrep" "fzf" "jq" "yq" "htop" "tree" "wget" "curl")
 
@@ -288,12 +286,6 @@ done
 
 log_success "Essential development tools installed"
 echo ""
-
-if [[ "$MINIMAL" == true ]]; then
-    log_info "Minimal installation mode - skipping optional components"
-    log_info "Jumping to shell configuration..."
-    echo ""
-else
 
 ################################################################################
 # 5. Install Programming Languages & Runtimes
@@ -319,24 +311,28 @@ fi
 
 if command_exists pip3; then
     pip3 install --upgrade pip
-    pip3 install virtualenv pipenv
+    pip3 install virtualenv
 fi
 
-# FIX: Install Poetry via its official installer instead of pip to avoid
-#      dependency conflicts with project virtual environments.
-if ! command_exists poetry; then
-    log_info "Installing Poetry via official installer..."
-    # SECURITY NOTE: curl|bash — review https://install.python-poetry.org first.
-    curl -sSL https://install.python-poetry.org | python3 -
-    log_success "Poetry installed"
+# uv — fast Python package and project manager (replaces Poetry/pipenv)
+if ! command_exists uv; then
+    log_info "Installing uv (fast Python package manager)..."
+    brew_install_with_timeout uv || true
 else
-    log_success "Poetry already installed"
+    log_success "uv already installed"
 fi
 
-# Node.js (via nvm)
+# Jupyter — interactive notebooks for AI/data work
+log_info "Installing Jupyter (this may take a few minutes)..."
+if command_exists pip3; then
+    pip3 install jupyter jupyterlab || true
+    log_success "Jupyter and JupyterLab installed"
+fi
+
+# Node.js (via nvm) — required for AI CLI tools
 log_info "Installing Node.js via nvm..."
 if [ ! -d "$HOME/.nvm" ]; then
-    # FIX: Fetch latest nvm version dynamically instead of pinning to v0.39.7
+    # FIX: Fetch latest nvm version dynamically instead of pinning to a specific version.
     # SECURITY NOTE: curl|bash — review https://github.com/nvm-sh/nvm first.
     NVM_VERSION=$(curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
     log_info "Installing nvm ${NVM_VERSION}..."
@@ -356,127 +352,73 @@ else
     log_success "Node.js already installed ($(node --version))"
 fi
 
-# Go
-if command_exists go; then
-    log_success "Go already installed ($(go version 2>/dev/null | awk '{print $3}'))"
-else
-    log_info "Installing Go..."
-    brew_install_with_timeout go
-fi
-
-# Rust
-if command_exists rustc; then
-    log_success "Rust already installed ($(rustc --version 2>/dev/null | awk '{print $2}'))"
-else
-    log_info "Installing Rust..."
-    # SECURITY NOTE: curl|bash — review https://sh.rustup.rs first.
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    source "$HOME/.cargo/env"
-fi
-
-# Java (OpenJDK 17)
-if brew list openjdk@17 &>/dev/null; then
-    log_success "OpenJDK 17 already installed"
-else
-    log_info "Installing Java (OpenJDK 17)..."
-    brew_install_with_timeout openjdk@17
-fi
-
 log_success "Programming languages installed"
 echo ""
 
-################################################################################
-# 6. Install Cloud & DevOps Tools
-################################################################################
-if [[ "$SKIP_CLOUD" == false ]]; then
-    log_info "Step 6: Installing cloud and DevOps tools..."
+if [[ "$MINIMAL" == true ]]; then
+    log_info "Minimal installation mode - skipping optional components"
+    log_info "Jumping to shell configuration..."
+    echo ""
+else
 
-    # FIX: Tap HashiCorp's official repo — packer, vault, consul, nomad were
-    #      removed from Homebrew core after the BSL license change.
-    log_info "Adding HashiCorp tap..."
-    brew tap hashicorp/tap || true
+################################################################################
+# 6. Install AI Development Tools
+################################################################################
+if [[ "$SKIP_AI_TOOLS" == false ]]; then
+    log_info "Step 6: Installing AI development tools..."
 
-    # Docker
-    if [ -d "/Applications/Docker.app" ]; then
-        log_success "Docker already installed"
+    # Ollama — run large language models locally
+    if command_exists ollama; then
+        log_success "Ollama already installed"
     else
-        brew_install_cask_with_timeout docker || true
-        log_warning "Please open Docker.app to complete setup"
+        log_info "Installing Ollama (local LLM runner)..."
+        brew_install_with_timeout ollama || true
     fi
 
-    # Kubernetes tools
-    log_info "Installing Kubernetes tools..."
-    declare -a k8s_tools=("kubectl" "kubectx" "k9s" "helm")
-    for tool in "${k8s_tools[@]}"; do
-        if ! command_exists "$tool"; then
-            brew_install_with_timeout "$tool" || true
-        else
-            log_success "$tool already installed"
-        fi
-    done
-
-    # Terraform
-    if command_exists terraform; then
-        log_success "Terraform already installed"
+    # Claude Code — Anthropic's official AI coding CLI
+    # npm must be available (installed via nvm above)
+    if command_exists claude; then
+        log_success "Claude Code already installed"
     else
-        brew_install_with_timeout hashicorp/tap/terraform || true
+        log_info "Installing Claude Code (Anthropic AI coding CLI)..."
+        npm install -g @anthropic-ai/claude-code || true
     fi
 
-    # AWS CLI
+    # OpenAI Codex CLI
+    if command_exists codex; then
+        log_success "OpenAI Codex CLI already installed"
+    else
+        log_info "Installing OpenAI Codex CLI..."
+        npm install -g @openai/codex || true
+    fi
+
+    # AWS CLI — useful for AI services (Bedrock, SageMaker)
     if command_exists aws; then
         log_success "AWS CLI already installed"
     else
         brew_install_with_timeout awscli || true
     fi
 
-    # Google Cloud SDK
-    if command_exists gcloud; then
-        log_success "Google Cloud SDK already installed"
+    # Terraform — infrastructure as code
+    if command_exists terraform; then
+        log_success "Terraform already installed"
     else
-        brew_install_cask_with_timeout google-cloud-sdk || true
+        brew tap hashicorp/tap || true
+        brew_install_with_timeout hashicorp/tap/terraform || true
     fi
 
-    # Azure CLI
-    if command_exists az; then
-        log_success "Azure CLI already installed"
+    # Docker — note only, do not auto-install (requires GUI setup)
+    if [ -d "/Applications/Docker.app" ]; then
+        log_success "Docker already installed"
     else
-        brew_install_with_timeout azure-cli || true
+        log_info "Docker: download and install from https://www.docker.com/products/docker-desktop/"
+        log_warning "Docker requires manual installation — visit docker.com to download Docker Desktop"
     fi
 
-    # Ansible
-    if command_exists ansible; then
-        log_success "Ansible already installed"
-    else
-        brew_install_with_timeout ansible || true
-    fi
-
-    # FIX: Use hashicorp/tap/ prefixed names for all HashiCorp tools.
-    # FIX: Added vagrant warning — VirtualBox provider does not support Apple Silicon.
-    #      You will need VMware Fusion (free for personal use) or Parallels instead.
-    log_info "Installing additional DevOps tools..."
-    declare -a devops_tools=("hashicorp/tap/packer" "hashicorp/tap/vault" "hashicorp/tap/consul" "hashicorp/tap/nomad")
-    for tool in "${devops_tools[@]}"; do
-        tool_name="${tool##*/}"  # strip the tap prefix for command_exists check
-        if ! command_exists "$tool_name"; then
-            brew_install_with_timeout "$tool" || true
-        else
-            log_success "$tool_name already installed"
-        fi
-    done
-
-    # Vagrant — install but warn about Apple Silicon provider requirement
-    if ! command_exists vagrant; then
-        brew_install_cask_with_timeout vagrant || true
-    else
-        log_success "vagrant already installed"
-    fi
-    log_warning "Vagrant on Apple Silicon requires VMware Fusion or Parallels as the provider."
-    log_warning "VirtualBox does NOT support Apple Silicon. See: https://developer.hashicorp.com/vagrant/docs/providers"
-
-    log_success "Cloud & DevOps tools installed"
+    log_success "AI development tools installed"
     echo ""
 else
-    log_info "Step 6: Skipping cloud tools (--skip-cloud flag)"
+    log_info "Step 6: Skipping AI tools (--skip-ai-tools flag)"
     echo ""
 fi
 
@@ -486,19 +428,24 @@ fi
 if [[ "$SKIP_DATABASES" == false ]]; then
     log_info "Step 7: Installing database tools..."
 
-    # FIX: MongoDB requires its own tap — without it brew install will fail.
-    log_info "Adding MongoDB tap..."
-    brew tap mongodb/brew || true
+    if ! brew list postgresql@15 &>/dev/null; then
+        brew_install_with_timeout postgresql@15 || true
+    else
+        log_success "postgresql@15 already installed"
+    fi
 
-    declare -a databases=("postgresql@15" "mysql" "redis" "mongodb/brew/mongodb-community")
-    for db in "${databases[@]}"; do
-        db_name="${db##*/}"  # strip tap prefix for brew list check
-        if ! brew list "$db_name" &>/dev/null; then
-            brew_install_with_timeout "$db" || true
-        else
-            log_success "$db_name already installed"
-        fi
-    done
+    if ! brew list redis &>/dev/null; then
+        brew_install_with_timeout redis || true
+    else
+        log_success "redis already installed"
+    fi
+
+    # SQLite — check brew list, not command_exists (/usr/bin/sqlite3 ships with macOS)
+    if ! brew list sqlite3 &>/dev/null; then
+        brew_install_with_timeout sqlite3 || true
+    else
+        log_success "sqlite3 already installed"
+    fi
 
     log_success "Database tools installed"
     log_info "Note: Databases are not auto-started. Use 'brew services start <db>' when needed"
@@ -519,27 +466,32 @@ else
     brew_install_cask_with_timeout visual-studio-code || true
 fi
 
-if command_exists nvim; then
-    log_success "Neovim already installed"
+# Install VS Code extensions — code CLI is only available after opening VS Code once
+if command_exists code; then
+    log_info "Installing VS Code extensions..."
+    code --install-extension ms-python.python || true
+    code --install-extension ms-toolsai.jupyter || true
+    code --install-extension anthropic.claude || true
+    code --install-extension github.copilot || true
+    log_success "VS Code extensions installed"
 else
-    brew_install_with_timeout neovim || true
-fi
-
-if [ -d "/Applications/JetBrains Toolbox.app" ]; then
-    log_success "JetBrains Toolbox already installed"
-else
-    brew_install_cask_with_timeout jetbrains-toolbox || true
+    log_warning "VS Code 'code' CLI not yet available — open VS Code once to enable it"
+    log_info "Recommended extensions to install manually:"
+    log_info "  - Python (ms-python.python)"
+    log_info "  - Jupyter (ms-toolsai.jupyter)"
+    log_info "  - Claude (anthropic.claude)"
+    log_info "  - GitHub Copilot (github.copilot)"
 fi
 
 log_success "IDEs and editors installed"
 echo ""
 
 ################################################################################
-# 9. Install Communication & Productivity Tools
+# 9. Install Productivity Tools
 ################################################################################
-log_info "Step 9: Installing communication and productivity tools..."
+log_info "Step 9: Installing productivity tools..."
 
-declare -a cask_apps=("slack" "zoom" "notion" "rectangle" "iterm2" "postman")
+declare -a cask_apps=("iterm2" "rectangle")
 for app in "${cask_apps[@]}"; do
     if brew list --cask "$app" &>/dev/null; then
         log_success "$app already installed"
@@ -548,7 +500,7 @@ for app in "${cask_apps[@]}"; do
     fi
 done
 
-log_success "Communication & productivity tools installed"
+log_success "Productivity tools installed"
 echo ""
 
 fi  # End of non-minimal installation
@@ -612,43 +564,35 @@ if [ -f "$HOME/.zshrc" ]; then
 fi
 
 if grep -q "^plugins=" "$HOME/.zshrc"; then
-    sed -i '' 's/^plugins=.*/plugins=(git docker kubectl terraform aws gcloud ansible zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+    sed -i '' 's/^plugins=.*/plugins=(git python zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
 else
-    echo 'plugins=(git docker kubectl terraform aws gcloud ansible zsh-autosuggestions zsh-syntax-highlighting)' >> "$HOME/.zshrc"
+    echo 'plugins=(git python zsh-autosuggestions zsh-syntax-highlighting)' >> "$HOME/.zshrc"
 fi
 
-if ! grep -q "# === mac-setup Config ===" "$HOME/.zshrc"; then
+if ! grep -q "# === ai-dev-setup Config ===" "$HOME/.zshrc"; then
     cat >> "$HOME/.zshrc" << EOF
 
-# === mac-setup Config ===
+# === ai-dev-setup Config ===
 
 # NVM configuration
 export NVM_DIR="\$HOME/.nvm"
 [ -s "\$NVM_DIR/nvm.sh" ] && \\. "\$NVM_DIR/nvm.sh"
 [ -s "\$NVM_DIR/bash_completion" ] && \\. "\$NVM_DIR/bash_completion"
 
-# Rust configuration
-[ -f "\$HOME/.cargo/env" ] && source "\$HOME/.cargo/env"
-
-# Go configuration
-export GOPATH="\$HOME/go"
-export PATH="\$PATH:\$GOPATH/bin"
-
 # Homebrew ($ARCH_NAME)
 eval "\$($BREW_PREFIX/bin/brew shellenv)"
 
-# FIX: Java PATH — openjdk@17 is keg-only and not linked into /usr/local/bin
-#      automatically, so it must be added to PATH manually.
-export PATH="$BREW_PREFIX/opt/openjdk@17/bin:\$PATH"
-export JAVA_HOME="\$($BREW_PREFIX/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home 2>/dev/null || echo '')"
-
-# Poetry
+# uv — Python package manager
 export PATH="\$HOME/.local/bin:\$PATH"
 
 # Starship prompt
 # FIX: Added note — run 'starship preset plain-text > ~/.config/starship.toml'
 #      or visit https://starship.rs/presets/ to customise your prompt theme.
 command -v starship &>/dev/null && eval "\$(starship init zsh)"
+
+# Jupyter aliases
+alias jl='jupyter lab'
+alias jn='jupyter notebook'
 
 # Aliases - DISABLED to allow both traditional and modern tools to coexist
 # Uncomment any aliases you want to use:
@@ -658,7 +602,6 @@ command -v starship &>/dev/null && eval "\$(starship init zsh)"
 # alias cat='bat'
 # alias find='fd'
 # alias grep='rg'
-# alias k='kubectl'
 #
 # Modern CLI tools are installed and available by their actual names:
 # - eza (modern ls with colors, icons, git status)
@@ -670,7 +613,7 @@ command -v starship &>/dev/null && eval "\$(starship init zsh)"
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# === End mac-setup Config ===
+# === End ai-dev-setup Config ===
 EOF
     log_success "Custom shell configurations added"
 else
@@ -685,7 +628,7 @@ echo ""
 ################################################################################
 log_info "Step 12: Creating development directory structure..."
 
-mkdir -p "$HOME/Development/"{projects,learning,tools,scripts}
+mkdir -p "$HOME/Development/"{projects,learning,tools,scripts,ai-experiments}
 mkdir -p "$HOME/.config"
 
 log_success "Development directories created"
@@ -720,7 +663,7 @@ echo ""
 # Final Steps & Summary
 ################################################################################
 log_success "========================================="
-log_success "MacBook setup complete!"
+log_success "AI Dev Setup complete!"
 log_success "========================================="
 echo ""
 
@@ -728,27 +671,24 @@ log_info "Installed versions:"
 echo "  Python 3.12: $(${BREW_PREFIX}/opt/python@3.12/bin/python3.12 --version 2>/dev/null || echo 'N/A')"
 echo "  Python 3.11: $(${BREW_PREFIX}/opt/python@3.11/bin/python3.11 --version 2>/dev/null || echo 'N/A')"
 echo "  Node:        $(node --version 2>/dev/null || echo 'N/A')"
-echo "  Go:          $(go version 2>/dev/null | awk '{print $3}' || echo 'N/A')"
-echo "  Rust:        $(rustc --version 2>/dev/null | awk '{print $2}' || echo 'N/A')"
-echo "  Java:        $(java -version 2>&1 | head -n 1 || echo 'N/A')"
-echo "  Docker:      $(docker --version 2>/dev/null || echo 'N/A (open Docker.app)')"
+echo "  uv:          $(uv --version 2>/dev/null || echo 'N/A')"
+echo "  Jupyter:     $(jupyter --version 2>/dev/null | head -1 || echo 'N/A')"
+echo "  Ollama:      $(ollama --version 2>/dev/null || echo 'N/A (if installed)')"
+echo "  Claude Code: $(claude --version 2>/dev/null || echo 'N/A (if installed)')"
 echo "  Git:         $(git --version 2>/dev/null || echo 'N/A')"
 echo ""
 
 log_info "Next steps:"
 echo "  1. Restart your terminal or run: source ~/.zshrc"
-echo "  2. Open Docker.app to complete Docker setup"
-echo "  3. Add your SSH key to GitHub/GitLab (displayed above)"
-if [[ "$SKIP_CLOUD" == false ]]; then
-echo "  4. Configure cloud provider credentials:"
-echo "     - AWS:   aws configure"
-echo "     - GCP:   gcloud init"
-echo "     - Azure: az login"
-fi
-echo "  5. Install VS Code extensions for your workflow"
-echo "  6. Customise your Starship prompt: https://starship.rs/presets/"
-echo "  7. Vagrant users: install VMware Fusion (free) — VirtualBox is not supported on Apple Silicon"
+echo "  2. Add your SSH key to GitHub: cat ~/.ssh/id_ed25519.pub"
+echo "  3. Set up your API keys:"
+echo "     - Anthropic: export ANTHROPIC_API_KEY='your-key' (get at console.anthropic.com)"
+echo "     - OpenAI:    export OPENAI_API_KEY='your-key'    (get at platform.openai.com)"
+echo "  4. Try Ollama (run a local AI model): ollama run llama3"
+echo "  5. Launch Jupyter: jupyter lab  (or use alias: jl)"
+echo "  6. Start coding with Claude Code: claude"
+echo "  7. Customise your Starship prompt: https://starship.rs/presets/"
 echo "  8. Restart your Mac for all system changes to take effect"
 echo ""
 log_info "Log saved to: $LOGFILE"
-log_info "Happy coding! 🚀"
+log_info "Happy building! 🤖"

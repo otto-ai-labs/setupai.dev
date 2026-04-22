@@ -1,185 +1,163 @@
-# 🚀 mac-setup
+# AI Dev Setup
 
-> **One script. Full developer setup. Zero headaches.**
+> **One script. AI development, ready to go.**
 
 [![macOS](https://img.shields.io/badge/macOS-11%2B-blue?logo=apple)](https://www.apple.com/macos/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Shell](https://img.shields.io/badge/Shell-Bash-green?logo=gnu-bash)](https://www.gnu.org/software/bash/)
 
-Setting up a new Mac for software development used to mean hours of searching, downloading, and configuring tools one by one. **mac-setup** does all of that for you in a single command.
-
-Whether you're a seasoned engineer or someone setting up their first development machine, this script handles the heavy lifting — installing the right tools, configuring your shell, and getting everything working together correctly.
+Set up your Mac for AI development in a single command. Installs Python, Jupyter, Ollama, Claude Code, Codex CLI, and everything else you need to start building AI applications — whether you're a total beginner or an experienced engineer.
 
 Works on both **Intel** and **Apple Silicon** Macs (M1, M2, M3, M4 and later).
 
----
-
-## 📖 Table of Contents
-
-- [Before You Start](#-before-you-start)
-- [Quick Start](#-quick-start)
-- [What Gets Installed](#-what-gets-installed)
-- [Installation Options](#-installation-options)
-- [After the Script Finishes](#-after-the-script-finishes)
-- [Troubleshooting](#-troubleshooting)
-- [Security & Privacy](#-security--privacy)
-- [Performance Tips](#-performance-tips)
-- [Contributing](#-contributing)
+**Website:** [setupai.dev](https://setupai.dev)
 
 ---
 
-## ✅ Before You Start
+## Table of Contents
+
+- [Before You Start](#before-you-start)
+- [Quick Start](#quick-start)
+- [What Gets Installed](#what-gets-installed)
+- [Installation Options](#installation-options)
+- [After the Script Finishes](#after-the-script-finishes)
+- [Troubleshooting](#troubleshooting)
+- [Security & Privacy](#security--privacy)
+- [Performance Tips](#performance-tips)
+- [Contributing](#contributing)
+
+---
+
+## Before You Start
 
 Take 5 minutes to do these things first — they'll save you time later.
 
 **1. Update macOS**
-Go to **System Settings → General → Software Update** and install any pending updates. Some tools require a recent version of macOS to work properly.
+Go to **System Settings → General → Software Update** and install any pending updates.
 
 **2. Have your Git details ready**
-The script will ask for your name and email address to configure Git. These show up on your code commits — use the same name and email as your GitHub or GitLab account.
+The script will ask for your name and email address to configure Git. Use the same name and email as your GitHub account.
 
 **3. Make sure you have a stable internet connection**
 The script downloads several gigabytes of tools. A wired or strong Wi-Fi connection is recommended.
 
 **4. Set aside 30–60 minutes**
-You can walk away during most of the installation — the script runs on its own. Just stay nearby in case a popup asks for your password.
+You can walk away during most of the installation. Just stay nearby in case a popup asks for your password.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-Open the **Terminal** app (you can find it in Applications → Utilities) and paste one of the following commands.
+Open the **Terminal** app (Applications → Utilities) and paste one of the following commands.
 
 ### Option A — Run directly (fastest)
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/mac-setup/main/devSetup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)
 ```
 
 ### Option B — Download first, then run (recommended if you want to review the script)
 
 ```bash
 # Step 1: Download the repository
-git clone https://github.com/otto-ai-labs/mac-setup.git
+git clone https://github.com/otto-ai-labs/setupai.dev.git
 
 # Step 2: Move into the folder
-cd mac-setup
+cd setupai.dev
 
 # Step 3: Make the script runnable
-chmod +x devSetup.sh
+chmod +x setup.sh
 
 # Step 4: Run it
-./devSetup.sh
+./setup.sh
 ```
 
-> 💡 **What is Terminal?** Terminal is an app on your Mac that lets you type commands directly to your computer. Think of it as a text-based way to control your Mac — very powerful for developers.
+> **What is Terminal?** Terminal is an app on your Mac that lets you type commands directly to your computer. Think of it as a text-based way to control your Mac — very powerful for developers.
 
 ---
 
-## 📦 What Gets Installed
-
-The script is divided into categories. Here's exactly what you get and why each piece matters.
+## What Gets Installed
 
 ---
 
-### 🛠 Essential Tools
+### Essential Tools
 *The foundation everything else is built on.*
 
 | Tool | What it does |
 |------|-------------|
 | **Homebrew** | The "app store" for developer tools on Mac. The script uses this to install almost everything else. |
 | **Git** | Tracks changes to your code over time and lets you collaborate with others. |
-| **SSH Key** | A secure login key automatically created and linked to your Git email. You'll add this to GitHub/GitLab once. |
+| **SSH Key** | A secure login key automatically created and linked to your Git email. You'll add this to GitHub once. |
 | **Starship** | Makes your terminal prompt show useful info like which Git branch you're on. |
-| **tmux** | Lets you split your terminal into multiple panes and keep sessions running in the background. |
-| **Oh My Zsh** | Adds helpful features and plugins to your shell (the terminal environment). |
+| **Oh My Zsh** | Adds helpful features and plugins to your shell. |
 | **bat, eza, fd, ripgrep, fzf** | Faster and friendlier versions of common terminal commands. |
-| **jq, yq** | Tools for reading and editing JSON/YAML files — common in DevOps work. |
+| **jq, yq** | Tools for reading and editing JSON/YAML files. |
 
 ---
 
-### 💻 Programming Languages
-*The languages your code will be written in.*
+### Programming Languages
+*The languages your AI code will be written in.*
 
 | Language | Version | Notes |
 |----------|---------|-------|
-| **Python** | 3.11 & 3.12 | Includes `pip`, `virtualenv`, `pipenv`, and `poetry` for managing project dependencies. |
-| **Node.js** | Latest LTS | Installed via `nvm`, which lets you switch between Node versions per project. |
-| **Go** | Latest stable | Popular for backend services and DevOps tooling. |
-| **Rust** | Latest stable | Fast, safe systems programming language. |
-| **Java** | OpenJDK 17 | Required by many enterprise tools and frameworks. |
+| **Python** | 3.11 & 3.12 | Includes `pip`, `virtualenv`, and `uv` for managing dependencies. |
+| **Jupyter / JupyterLab** | Latest | Interactive notebooks for AI/data experimentation. |
+| **Node.js** | Latest LTS | Installed via `nvm`. Required for Claude Code and Codex CLI. |
+| **uv** | Latest | Lightning-fast Python package and project manager. |
 
 ---
 
-### ☁️ Cloud & DevOps Tools
-*For working with cloud infrastructure and containers.*
-*(Can be skipped with `--skip-cloud` — see [Installation Options](#-installation-options))*
+### AI Tools
+*For building and running AI applications.*
+*(Can be skipped with `--skip-ai-tools` — see [Installation Options](#installation-options))*
 
 | Tool | What it does |
 |------|-------------|
-| **Docker** | Runs applications in isolated containers — keeps your machine clean. |
-| **kubectl** | Command-line tool for managing Kubernetes clusters. |
-| **kubectx / k9s** | Easier ways to switch between and visualise Kubernetes clusters. |
-| **Helm** | Package manager for Kubernetes applications. |
-| **Terraform** | Write code that creates and manages cloud infrastructure. |
-| **AWS CLI** | Control Amazon Web Services from the terminal. |
-| **Google Cloud SDK** | Control Google Cloud Platform from the terminal. |
-| **Azure CLI** | Control Microsoft Azure from the terminal. |
-| **Ansible** | Automate configuration and deployment across many servers. |
-| **Packer, Vault, Consul, Nomad** | HashiCorp tools for building images, managing secrets, service discovery, and workload scheduling. |
-| **Vagrant** | Create and manage virtual machines for local testing. ⚠️ Requires VMware Fusion or Parallels on Apple Silicon — VirtualBox is not supported. |
+| **Ollama** | Run large language models locally on your Mac (Llama, Mistral, Gemma, and more). No API key required. |
+| **Claude Code** | Anthropic's official AI coding CLI. Requires an Anthropic API key. |
+| **Codex CLI** | OpenAI's coding CLI. Requires an OpenAI API key. |
+| **AWS CLI** | Access Amazon Bedrock, SageMaker, and other AI services from the terminal. |
+| **Terraform** | Write code that creates and manages AI infrastructure. |
+
+> **Docker:** The script notes where to download Docker Desktop but does not auto-install it, as Docker requires a manual GUI setup. Visit [docker.com](https://www.docker.com/products/docker-desktop/) to download.
 
 ---
 
-### 🗄 Databases
+### Databases
 *Common databases for local development.*
-*(Can be skipped with `--skip-databases` — see [Installation Options](#-installation-options))*
+*(Can be skipped with `--skip-databases` — see [Installation Options](#installation-options))*
 
 | Database | Use case |
 |----------|----------|
-| **PostgreSQL 15** | The most popular open-source relational database. |
-| **MySQL** | Widely used relational database, common in web applications. |
-| **Redis** | Lightning-fast in-memory store for caching and queues. |
-| **MongoDB** | Document database — stores data in flexible JSON-like format. |
+| **PostgreSQL 15** | The most popular open-source relational database. Great for storing structured AI outputs. |
+| **Redis** | Lightning-fast in-memory store for caching, queues, and AI session data. |
+| **SQLite** | Lightweight embedded database — ideal for local AI apps and prototypes. |
 
-> 💡 Databases are installed but **not auto-started**. Run `brew services start <name>` when you actually need one. This keeps your Mac fast when you're not actively developing.
+> Databases are installed but **not auto-started**. Run `brew services start <name>` when you actually need one. This keeps your Mac fast when you're not actively developing.
 
 ---
 
-### ✏️ Editors & IDEs
+### Editors & Productivity
 *Where you'll write your code.*
 
 | Tool | What it does |
 |------|-------------|
-| **Visual Studio Code** | The most popular free code editor. Lightweight and endlessly extensible. |
-| **Neovim** | A powerful terminal-based editor, preferred by many senior engineers. |
-| **JetBrains Toolbox** | Manages JetBrains IDEs like IntelliJ, PyCharm, GoLand, and more. |
-
----
-
-### 💬 Productivity Apps
-
-| App | Purpose |
-|-----|---------|
+| **Visual Studio Code** | The most popular free code editor. Installed with Python, Jupyter, Claude, and GitHub Copilot extensions. |
 | **iTerm2** | A better terminal replacement for the built-in Terminal app. |
-| **Slack** | Team messaging. |
-| **Zoom** | Video calls. |
-| **Notion** | Notes and documentation. |
 | **Rectangle** | Snap windows to halves and corners with keyboard shortcuts. |
-| **Postman** | Test and explore APIs visually. |
 
 ---
 
-## ⚙️ Installation Options
+## Installation Options
 
 You can customise what gets installed by adding flags to the command.
 
-```bash
-./devSetup.sh [OPTIONS]
+```
+./setup.sh [OPTIONS]
 
-  --minimal          Install only the essentials (no cloud tools, databases, or productivity apps)
-  --skip-cloud       Skip all cloud provider tools (AWS, GCP, Azure, Docker, Kubernetes, etc.)
-  --skip-databases   Skip all database installations
+  --minimal          Install only essentials (languages + shell, no AI tools/databases/apps)
+  --skip-ai-tools    Skip AI tools (Ollama, Claude Code, Codex CLI, AWS CLI, Terraform)
+  --skip-databases   Skip database installations
   --help             Show available options
 ```
 
@@ -187,32 +165,32 @@ You can customise what gets installed by adding flags to the command.
 
 ```bash
 # Just the essentials — languages and CLI tools only
-./devSetup.sh --minimal
+./setup.sh --minimal
 
-# Skip cloud tools — good if you only do backend/frontend work
-./devSetup.sh --skip-cloud
+# Skip AI tools — good if you're setting up a general dev machine
+./setup.sh --skip-ai-tools
 
 # Skip local databases — useful if you run everything in Docker
-./devSetup.sh --skip-databases
+./setup.sh --skip-databases
 
-# Skip both cloud tools and databases
-./devSetup.sh --skip-cloud --skip-databases
+# Skip both AI tools and databases
+./setup.sh --skip-ai-tools --skip-databases
 ```
 
 ---
 
-## 🏗 Architecture Support
+## Architecture Support
 
 The script automatically detects your Mac's chip and configures everything correctly.
 
 | Mac Type | Chip Examples | Status |
 |----------|--------------|--------|
-| Apple Silicon | M1, M2, M3, M4 (Pro/Max/Ultra) | ✅ Fully supported |
-| Intel | 2015–2020 Intel Macs | ✅ Fully supported |
+| Apple Silicon | M1, M2, M3, M4 (Pro/Max/Ultra) | Fully supported |
+| Intel | 2015–2020 Intel Macs | Fully supported |
 
 ---
 
-## ✅ After the Script Finishes
+## After the Script Finishes
 
 The script will tell you exactly what to do, but here's a checklist for reference.
 
@@ -222,95 +200,93 @@ source ~/.zshrc
 ```
 Or just close the terminal window and open a fresh one.
 
-**2. Open Docker.app**
-Find it in your Applications folder and open it once. Docker needs to finish its own setup before you can use it.
+**2. Add your SSH key to GitHub**
+The script printed your SSH public key. Copy it and add it at [github.com/settings/keys](https://github.com/settings/keys).
 
-**3. Add your SSH key to GitHub or GitLab**
-The script printed your SSH public key at the end. Copy it and add it here:
-- GitHub → [Settings → SSH Keys](https://github.com/settings/keys)
-- GitLab → [Profile → SSH Keys](https://gitlab.com/-/profile/keys)
-
-To view it again at any time:
+To view it again:
 ```bash
 cat ~/.ssh/id_ed25519.pub
 ```
 
-**4. Log in to your cloud providers** *(if installed)*
+**3. Set up your AI API keys**
 ```bash
-# Amazon Web Services
-aws configure
+# Anthropic (for Claude Code) — get at console.anthropic.com
+export ANTHROPIC_API_KEY='sk-ant-...'
 
-# Google Cloud Platform
-gcloud init
-
-# Microsoft Azure
-az login
+# OpenAI (for Codex CLI) — get at platform.openai.com
+export OPENAI_API_KEY='sk-...'
 ```
 
-**5. Install VS Code extensions**
-Open VS Code, press `Cmd + Shift + X`, and search for:
-- Python
-- Docker
-- Kubernetes
-- Terraform
-- GitLens
-- ESLint
-- Prettier
+Add these lines to your `~/.zshrc` so they persist across sessions.
 
-**6. Customise your terminal prompt** *(optional)*
-Starship is installed and ready. Browse themes and presets at [starship.rs/presets](https://starship.rs/presets/) and pick one you like.
+**4. Try Ollama (run a local model — no API key needed)**
+```bash
+ollama run llama3
+```
 
-**7. Restart your Mac**
-A restart ensures all the system-level changes (animations, performance tweaks) fully take effect.
+**5. Launch Jupyter and start experimenting**
+```bash
+jupyter lab
+# or use the installed shortcut:
+jl
+```
+
+**6. Start coding with Claude Code**
+```bash
+claude
+```
+
+**7. Customise your terminal prompt** *(optional)*
+Starship is installed and ready. Browse themes at [starship.rs/presets](https://starship.rs/presets/).
+
+**8. Restart your Mac**
+A restart ensures all system-level changes (animations, performance tweaks) fully take effect.
 
 ---
 
-## 📁 Directory Structure
+## Directory Structure
 
 The script creates a clean folder layout in your home directory:
 
 ```
 ~/Development/
-├── projects/     ← Your active coding projects
-├── learning/     ← Tutorials, experiments, and practice code
-├── tools/        ← Custom tools you build or install manually
-└── scripts/      ← Your automation and utility scripts
+├── projects/          ← Your active coding projects
+├── learning/          ← Tutorials, experiments, and practice code
+├── tools/             ← Custom tools you build or install manually
+├── scripts/           ← Your automation and utility scripts
+└── ai-experiments/    ← AI prototypes, notebooks, and model experiments
 ```
 
 ---
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
 **A note on `curl | bash`**
-This script — and three of the tools it installs (Homebrew, nvm, Rust) — use a pattern where a script is downloaded from the internet and run directly. This is standard practice in the developer community, but it does mean the script runs with your full user permissions. We encourage you to review scripts before running them:
+This script — and two of the tools it installs (Homebrew and nvm) — use a pattern where a script is downloaded from the internet and run directly. This is standard practice in the developer community, but it does mean the script runs with your full user permissions. We encourage you to review scripts before running them:
 - [Homebrew install script](https://github.com/Homebrew/install)
 - [nvm install script](https://github.com/nvm-sh/nvm)
-- [rustup install script](https://sh.rustup.rs)
 
 **SSH key passphrase**
-By default the script generates an SSH key without a passphrase so the process is non-interactive. If you'd like a passphrase (recommended for keys used on shared or high-security machines), open `devSetup.sh` and remove the `-N ""` from the `ssh-keygen` line — you'll be prompted to set one.
+By default the script generates an SSH key without a passphrase so the process is non-interactive. If you'd like a passphrase, open `setup.sh` and remove the `-N ""` from the `ssh-keygen` line — you'll be prompted to set one.
 
 **Other recommendations**
 - Enable **FileVault** (full disk encryption): System Settings → Privacy & Security → FileVault
 - Enable **Firewall**: System Settings → Network → Firewall
-- Enable **two-factor authentication** on all cloud accounts
+- Enable **two-factor authentication** on your GitHub, Anthropic, and OpenAI accounts
 - Run `brew upgrade` regularly to keep tools up to date
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **The script stopped and asked me to install Xcode tools**
 A popup should have appeared. Click Install, wait for it to finish, then run the script again.
 
 **A package failed or timed out**
-The script logs everything to a file in your home folder (`~/mac-setup_DATE_TIME.log`). Check the log to see which package failed, then install it manually:
+The script logs everything to a file in your home folder (`~/ai-dev-setup_DATE_TIME.log`). Check the log to see which package failed, then install it manually:
 ```bash
 brew install <package-name>
 ```
-
-**Docker won't start**
-Open Docker.app from your Applications folder, grant any permissions it asks for, and wait for the whale icon in your menu bar to stop animating.
 
 **`nvm` command not found after install**
 Run this to load it in your current session:
@@ -320,22 +296,36 @@ export NVM_DIR="$HOME/.nvm"
 ```
 Then close and reopen your terminal — it should work automatically after that.
 
-**`java` command not found**
-Reload your shell config:
+**`ollama` command not found**
+Reload your shell:
 ```bash
 source ~/.zshrc
 ```
-Java is installed but needs the PATH update in `.zshrc` to be loaded first.
+If Ollama still isn't found, install it manually: `brew install ollama`
 
-**Vagrant doesn't work with VirtualBox on my M-series Mac**
-VirtualBox does not support Apple Silicon. Install [VMware Fusion](https://www.vmware.com/products/fusion.html) (free for personal use) and configure Vagrant to use it as the provider.
+**`claude` command not found after install**
+Claude Code is installed via npm. Make sure nvm and Node are loaded:
+```bash
+source ~/.zshrc
+npm install -g @anthropic-ai/claude-code
+```
+
+**Jupyter won't start**
+Make sure Python and pip are working correctly:
+```bash
+pip3 install --upgrade jupyter jupyterlab
+```
+Then try `jupyter lab` again.
+
+**VS Code `code` command not found**
+The `code` CLI is only available after you've opened VS Code at least once. Open Visual Studio Code from your Applications folder, then try again.
 
 ---
 
-## 💡 Performance Tips
+## Performance Tips
 
 **Running databases only when you need them**
-Instead of having PostgreSQL, MySQL, and Redis all running in the background all the time:
+Instead of having PostgreSQL and Redis running in the background all the time:
 ```bash
 # Start a database
 brew services start postgresql@15
@@ -347,8 +337,27 @@ brew services stop postgresql@15
 brew services list
 ```
 
-**Using Docker for databases instead**
-Many developers prefer running databases inside Docker containers rather than installing them natively. If that's your preference, run the script with `--skip-databases` and use Docker Compose files in your projects.
+**Running Ollama on demand**
+Ollama loads models into memory and can use significant RAM. Start it only when you need it:
+```bash
+ollama run llama3
+# Press Ctrl+D or type /bye to exit
+```
+
+**Fast Python environments with uv**
+`uv` is dramatically faster than pip for creating virtual environments:
+```bash
+# Create a new project environment
+uv venv
+
+# Install packages
+uv pip install numpy pandas
+
+# Or use uv's project management
+uv init my-ai-project
+cd my-ai-project
+uv add anthropic openai
+```
 
 **Keeping things tidy**
 ```bash
@@ -358,7 +367,7 @@ brew update && brew upgrade && brew cleanup
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Found a bug? Want to add a tool? Contributions are welcome.
 
@@ -366,10 +375,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to submit changes.
 
 ---
 
-## 📝 License
+## License
 
 [MIT License](LICENSE) — free to use, modify, and share.
 
 ---
 
-*Made with ❤️ for the developer community*
+*Made for the AI builder community*
