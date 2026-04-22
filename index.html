@@ -694,6 +694,7 @@
       <li><a href="#tools">Tools</a></li>
       <li><a href="#options">Options</a></li>
       <li><a href="#after">After Install</a></li>
+      <li><a href="#security">Security</a></li>
       <li><a href="https://github.com/otto-ai-labs/setupai.dev">GitHub</a></li>
     </ul>
   </div>
@@ -870,6 +871,39 @@
           <li><strong>htop, tree, wget</strong> — system utilities</li>
         </ul>
       </div>
+
+      <div class="tools-card">
+        <div class="tools-card-header">
+          <span class="tools-card-icon">🌐</span>
+          <span class="tools-card-title">Web &amp; JS Tools</span>
+        </div>
+        <ul>
+          <li><strong>pnpm</strong> — fast package manager</li>
+          <li><strong>TypeScript</strong> — tsc, ts-node, tsx</li>
+          <li><strong>ESLint &amp; Prettier</strong> — lint &amp; format</li>
+          <li><strong>Vite &amp; Turbo</strong> — build tools</li>
+          <li><strong>Vercel CLI</strong> — deploy from terminal</li>
+          <li><strong>nodemon, serve</strong> — dev utilities</li>
+          <li><strong>Bruno</strong> — open-source API client</li>
+        </ul>
+        <p style="font-size:0.75rem; color: var(--text-muted); margin-top: 0.75rem;">Skip with <code>--skip-web</code></p>
+      </div>
+
+      <div class="tools-card">
+        <div class="tools-card-header">
+          <span class="tools-card-icon">🖥</span>
+          <span class="tools-card-title">macOS Defaults</span>
+        </div>
+        <ul>
+          <li><strong>Finder</strong> — show hidden files, path bar, list view</li>
+          <li><strong>Dock</strong> — auto-hide, no animations, 48px icons</li>
+          <li><strong>Keyboard</strong> — fast key repeat, tap to click</li>
+          <li><strong>Screenshots</strong> — PNG, saved to Desktop</li>
+          <li><strong>Hot corners</strong> — screensaver &amp; Mission Control</li>
+          <li><strong>Performance</strong> — animations disabled, transparency reduced</li>
+        </ul>
+        <p style="font-size:0.75rem; color: var(--text-muted); margin-top: 0.75rem;">Applied by <code>osx.sh</code> — <a href="https://github.com/otto-ai-labs/setupai.dev/blob/main/osx.sh" style="color:var(--accent-cyan)">see full list</a></p>
+      </div>
     </div>
   </div>
 </section>
@@ -881,6 +915,9 @@
     <h2 class="section-title">Installation options</h2>
     <p class="section-sub">Add flags to the command to control what gets installed.</p>
 
+    <div class="code-block"><span class="comment"># Re-run and upgrade everything — no prompts</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --yes</div>
+
     <div class="code-block"><span class="comment"># Just the essentials — languages and shell tools only</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --minimal</div>
 
@@ -890,21 +927,25 @@
     <div class="code-block"><span class="comment"># Skip local databases</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --skip-databases</div>
 
-    <div class="code-block"><span class="comment"># Skip both AI tools and databases</span>
-<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --skip-ai-tools --skip-databases</div>
+    <div class="code-block"><span class="comment"># Skip web/JS tools (TypeScript, ESLint, pnpm, Bruno…)</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --skip-web</div>
 
     <div class="flags-table-wrap">
       <table class="flags-table">
         <thead>
           <tr>
             <th>Flag</th>
-            <th>What it skips</th>
+            <th>What it does</th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td>--yes, -y</td>
+            <td>Auto-upgrades all already-installed tools without asking. Use on re-runs.</td>
+          </tr>
+          <tr>
             <td>--minimal</td>
-            <td>Installs only languages and shell tools. Skips AI tools, databases, editors, and productivity apps.</td>
+            <td>Installs only languages and shell tools. Skips AI tools, databases, editors, apps, and web tools.</td>
           </tr>
           <tr>
             <td>--skip-ai-tools</td>
@@ -913,6 +954,10 @@
           <tr>
             <td>--skip-databases</td>
             <td>Skips PostgreSQL, Redis, and SQLite.</td>
+          </tr>
+          <tr>
+            <td>--skip-web</td>
+            <td>Skips all web/JS tools — pnpm, TypeScript, ESLint, Prettier, Vite, Bruno, and more.</td>
           </tr>
           <tr>
             <td>--help</td>
@@ -985,6 +1030,46 @@
         <div>
           <h4>Restart your Mac</h4>
           <p>A restart ensures all system-level changes (animations, performance tweaks) take full effect.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Security & Transparency ──────────────────────────────── -->
+<section id="security" style="background: var(--bg-secondary);">
+  <div class="section-inner">
+    <div class="section-label">Security &amp; Transparency</div>
+    <h2 class="section-title">What the script does to your system</h2>
+    <p class="section-sub">Full transparency — no hidden changes. Review the scripts yourself before running.</p>
+
+    <div class="checklist">
+      <div class="check-item">
+        <div class="check-box" style="border-color: var(--accent-cyan);"></div>
+        <div>
+          <h4>Three scripts are downloaded and run from the internet</h4>
+          <p>Setup installs <strong>Homebrew</strong>, <strong>nvm</strong>, and <strong>Oh My Zsh</strong> using their official install scripts (curl | bash). Review them at <a href="https://github.com/Homebrew/install" style="color:var(--accent-cyan)">Homebrew</a>, <a href="https://github.com/nvm-sh/nvm" style="color:var(--accent-cyan)">nvm</a>, and <a href="https://github.com/ohmyzsh/ohmyzsh" style="color:var(--accent-cyan)">Oh My Zsh</a> before running.</p>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-box" style="border-color: var(--accent-cyan);"></div>
+        <div>
+          <h4>SSH key generated without a passphrase</h4>
+          <p>For a smooth non-interactive install, the SSH key is created with <code>-N ""</code> (no passphrase). To add one, open <code>scripts/modules/git.sh</code> and remove <code>-N ""</code> before running.</p>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-box" style="border-color: var(--accent-cyan);"></div>
+        <div>
+          <h4>macOS app quarantine is disabled</h4>
+          <p><code>osx.sh</code> sets <code>LSQuarantine = false</code>, which removes the <em>"Are you sure you want to open this application?"</em> dialog for downloaded apps. Remove this line from <code>osx.sh</code> if you prefer to keep the protection enabled.</p>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-box" style="border-color: var(--accent-cyan);"></div>
+        <div>
+          <h4>All source code is public and auditable</h4>
+          <p>Every script is readable on <a href="https://github.com/otto-ai-labs/setupai.dev" style="color:var(--accent-cyan)">GitHub</a>. Start with <code>setup.sh</code> to see exactly what runs and in what order.</p>
         </div>
       </div>
     </div>

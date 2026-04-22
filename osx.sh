@@ -109,8 +109,11 @@ defaults write NSGlobalDomain KeyRepeat -int 2
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
 # Set language and locale
-defaults write NSGlobalDomain AppleLanguages -array "en-AU" "en"
-defaults write NSGlobalDomain AppleLocale -string "en_AU@currency=AUD"
+# Respects SYSTEM_LOCALE env var if set, otherwise leaves system locale unchanged
+if [[ -n "$SYSTEM_LOCALE" ]]; then
+    defaults write NSGlobalDomain AppleLocale -string "$SYSTEM_LOCALE"
+fi
+# Use metric units (Centimeters) — change to false if you prefer Imperial
 defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
 defaults write NSGlobalDomain AppleMetricUnits -bool true
 

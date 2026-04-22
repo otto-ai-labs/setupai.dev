@@ -21,8 +21,8 @@ else
 fi
 
 if command_exists pip3; then
-    pip3 install --upgrade pip
-    pip3 install virtualenv
+    pip3 install --upgrade pip || true
+    pip3 install virtualenv || true
 fi
 
 # uv — fast Python package and project manager
