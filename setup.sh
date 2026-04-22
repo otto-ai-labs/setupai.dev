@@ -49,6 +49,7 @@ SKIP_AI_TOOLS=false
 SKIP_DATABASES=false
 SKIP_WEB=false
 MINIMAL=false
+UPGRADE_ALL=false
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -56,10 +57,12 @@ while [[ "$#" -gt 0 ]]; do
         --skip-databases) SKIP_DATABASES=true ;;
         --minimal)        MINIMAL=true ;;
         --skip-web)       SKIP_WEB=true ;;
+        --yes|-y)         UPGRADE_ALL=true ;;
         --help)
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
+            echo "  --yes, -y          Auto-upgrade all already-installed tools (no prompts)"
             echo "  --skip-ai-tools    Skip AI tools (Ollama, Claude Code, Codex CLI)"
             echo "  --skip-databases   Skip database installations"
             echo "  --skip-web         Skip JS web development tools (web.sh)"
@@ -82,8 +85,8 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-# Export flags so modules can read them
-export SKIP_AI_TOOLS SKIP_DATABASES SKIP_WEB MINIMAL
+# Export flags so modules and sub-scripts can read them
+export SKIP_AI_TOOLS SKIP_DATABASES SKIP_WEB MINIMAL UPGRADE_ALL
 
 # ── Pre-flight: collect inputs BEFORE exec/tee redirect ─────────────────────
 # The tee-based logging below can swallow prompts, making read hang.

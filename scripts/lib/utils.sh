@@ -20,12 +20,17 @@ command_exists() {
 
 # Ask whether to upgrade an already-installed tool.
 # Usage: prompt_upgrade "git" "2.43.0"
-# Returns 0 (yes) or 1 (no/skip)
+# Returns 0 (yes/upgrade) or 1 (no/skip)
+# Set UPGRADE_ALL=true (via --yes flag) to auto-answer yes to all.
 prompt_upgrade() {
     local name="$1"
     local version="$2"
     local answer
     echo -e "${YELLOW}[UPGRADE]${NC} $name is already installed (${version})"
+    if [[ "${UPGRADE_ALL:-false}" == true ]]; then
+        echo "         Auto-upgrading (--yes)"
+        return 0
+    fi
     read -r -p "         Upgrade to latest? [y/N] " answer </dev/tty
     [[ "$answer" =~ ^[Yy]$ ]]
 }

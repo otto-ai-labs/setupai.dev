@@ -37,6 +37,10 @@ prompt_upgrade() {
     local version="$2"
     local answer
     echo -e "${YELLOW}[UPGRADE]${NC} $name is already installed (${version})"
+    if [[ "${UPGRADE_ALL:-false}" == true ]]; then
+        echo "         Auto-upgrading (--yes)"
+        return 0
+    fi
     read -r -p "         Upgrade to latest? [y/N] " answer </dev/tty
     [[ "$answer" =~ ^[Yy]$ ]]
 }
@@ -58,6 +62,14 @@ npm_global_install() {
         npm install -g "$pkg" || log_warning "Failed to install $pkg — skipping"
     fi
 }
+
+# ── Flags ────────────────────────────────────────────────────────────────────
+for arg in "$@"; do
+    case $arg in
+        --yes|-y) UPGRADE_ALL=true ;;
+    esac
+done
+export UPGRADE_ALL
 
 if [[ -z "$SETUP_RUNNING" ]]; then
     echo ""
