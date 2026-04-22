@@ -21,6 +21,10 @@
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+# Signal to sub-scripts that they are running under setup.sh orchestration
+# (suppresses their own sudo keepalive and standalone banners/footers)
+export SETUP_RUNNING=1
+
 # ── Resolve script directory (works whether run directly or via curl|bash) ───
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -31,6 +35,7 @@ source "$SCRIPT_DIR/scripts/lib/utils.sh"
 # ── Parse flags ─────────────────────────────────────────────────────────────
 SKIP_AI_TOOLS=false
 SKIP_DATABASES=false
+SKIP_WEB=false
 MINIMAL=false
 
 while [[ "$#" -gt 0 ]]; do
@@ -38,14 +43,22 @@ while [[ "$#" -gt 0 ]]; do
         --skip-ai-tools)  SKIP_AI_TOOLS=true ;;
         --skip-databases) SKIP_DATABASES=true ;;
         --minimal)        MINIMAL=true ;;
+        --skip-web)       SKIP_WEB=true ;;
         --help)
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
             echo "  --skip-ai-tools    Skip AI tools (Ollama, Claude Code, Codex CLI)"
             echo "  --skip-databases   Skip database installations"
+            echo "  --skip-web         Skip JS web development tools (web.sh)"
             echo "  --minimal          Install only essential tools (languages + shell)"
             echo "  --help             Show this help message"
+            echo ""
+            echo "Individual scripts (run standalone):"
+            echo "  ./bootstrap.sh     Sync dotfiles from this repo to ~"
+            echo "  ./brew.sh          Install Homebrew + all packages"
+            echo "  ./osx.sh           Apply macOS developer defaults"
+            echo "  ./web.sh           Set up JS web development tools"
             exit 0
             ;;
         *)
@@ -58,7 +71,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Export flags so modules can read them
-export SKIP_AI_TOOLS SKIP_DATABASES MINIMAL
+export SKIP_AI_TOOLS SKIP_DATABASES SKIP_WEB MINIMAL
 
 # ── Pre-flight: collect inputs BEFORE exec/tee redirect ─────────────────────
 # The tee-based logging below can swallow prompts, making read hang.
@@ -131,8 +144,11 @@ run_module() {
     source "$module"
 }
 
-# ── Run modules ──────────────────────────────────────────────────────────────
-run_module brew.sh
+# ── Run top-level standalone scripts (SETUP_RUNNING=1 suppresses their banners) ──
+# brew.sh: Xcode CLI tools, Homebrew, core packages, Python, Node via nvm
+bash "$SCRIPT_DIR/brew.sh"
+
+# ── Run internal modules ──────────────────────────────────────────────────────
 run_module languages.sh
 
 if [[ "$MINIMAL" == true ]]; then
@@ -148,6 +164,14 @@ fi
 run_module git.sh
 run_module shell.sh
 run_module macos.sh
+
+# osx.sh: macOS system defaults tuned for developers
+bash "$SCRIPT_DIR/osx.sh"
+
+# web.sh: JS/web dev stack (Node, pnpm, TypeScript, ESLint, Vite, Bruno)
+if [[ "$SKIP_WEB" == false ]] && [[ "$MINIMAL" == false ]]; then
+    bash "$SCRIPT_DIR/web.sh"
+fi
 
 # ── Summary ──────────────────────────────────────────────────────────────────
 log_success "========================================="

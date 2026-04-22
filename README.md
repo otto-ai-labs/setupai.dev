@@ -76,6 +76,34 @@ chmod +x setup.sh
 
 ---
 
+## Individual Scripts
+
+Each script can be run standalone — you don't need to run the full `setup.sh` to use them.
+
+| Script | What it does |
+|--------|-------------|
+| `setup.sh` | Full AI dev setup — runs all modules in order |
+| `bootstrap.sh` | Syncs dotfiles from this repo to your home directory (`~`) |
+| `brew.sh` | Installs Xcode CLI tools, Homebrew, and all packages |
+| `osx.sh` | Applies macOS system defaults tuned for developers |
+| `web.sh` | Sets up JavaScript web development tools (Node, TypeScript, ESLint, Prettier, Vite) |
+
+```bash
+# Sync dotfiles to ~
+./bootstrap.sh
+
+# Install Homebrew + packages only
+./brew.sh
+
+# Apply macOS developer defaults
+./osx.sh
+
+# Set up JS web dev tools
+./web.sh
+```
+
+---
+
 ## What Gets Installed
 
 ---
