@@ -28,23 +28,53 @@ Works on both **Intel** and **Apple Silicon** Macs (M1, M2, M3, M4 and later).
 
 ---
 
-## Run It
+## Quick Start
 
-Open **Terminal** (`Cmd + Space` → `Terminal`) and run:
+### Step 1 — Open Terminal
+
+Press **Cmd + Space**, type **Terminal**, hit Enter.
+
+> Never used Terminal before? It's just a text-based way to control your Mac. You only need to paste one command.
+
+### Step 2 — Run the installer
+
+Paste this and hit Enter:
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light
 ```
 
-Or clone first if you want to review the scripts:
+The script will ask for your **Git name** and **Git email** first, then show you a checkbox menu for each category of tools.
+
+### Step 3 — Pick your tools
+
+Use the arrow keys and Space to toggle. Everything useful is already checked. Just press **D** to confirm each menu and move on.
+
+```
+  AI Tools  —  Tools for building and running AI applications
+  ────────────────────────────────────────────────────────────
+▶ [x] Claude Code           Anthropic AI coding CLI
+  [x] Codex CLI             OpenAI coding CLI
+  [ ] Ollama                Run LLMs locally (heavy — off by default)
+  [ ] AWS CLI               Access Bedrock, SageMaker and more
+  [x] GitHub CLI            Manage repos, PRs and issues
+  ────────────────────────────────────────────────────────────
+  Up/Down: move  Space/Enter: toggle  D: done  A: all  N: none
+```
+
+### Step 4 — Walk away
+
+The rest is automatic. Takes around 20 minutes on a good connection.
+
+---
+
+### Prefer to review the scripts first?
 
 ```bash
 git clone https://github.com/otto-ai-labs/setupai.dev.git
 cd setupai.dev
 ./setup.sh --light
 ```
-
-The `--light` flag pre-deselects all the heavy tools. You still get the interactive menus — toggle anything back on if you need it, then press **D** to confirm.
 
 ---
 
