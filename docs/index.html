@@ -1,415 +1,481 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TheVibeFounder Build Day Stack</title>
-  <meta name="description" content="One command. Lean Mac setup for founders who ship AI products fast.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>setupai.dev — Mac Setup for AI Builders</title>
+  <meta name="description" content="One command. Go from a fresh Mac to shipping AI-powered products." />
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
-
-    /* ── Tokens ── */
     :root {
-      --bg:        #f9f9f9;
-      --surface:   #ffffff;
-      --border:    #e5e5e5;
-      --border-2:  #f0f0f0;
-      --text:      #1a1a1a;
-      --text-2:    #555;
-      --text-3:    #888;
-      --text-4:    #999;
-      --link:      #888;
-      --code-bg:   #eee;
-      --pre-bg:    #1a1a1a;
-      --pre-fg:    #e8e8e8;
-      --pre-comment: #777;
-      --pre-cmd:   #79c0ff;
-      --btn-bg:    #1a1a1a;
-      --btn-fg:    #ffffff;
-      --btn-hover: #333;
-      --copy-bg:   #333;
-      --copy-fg:   #ccc;
-      --copy-hover:#555;
-      --step-bg:   #1a1a1a;
-      --step-fg:   #ffffff;
-      --badge-bg:  #f0f0f0;
-      --badge-br:  #ddd;
-      --badge-fg:  #666;
-      --tag-bg:    #f0f4ff;
-      --tag-br:    #c9d8ff;
-      --tag-fg:    #3451b2;
+      --bg-primary:   #0d1117;
+      --bg-secondary: #161b22;
+      --bg-terminal:  #1e2530;
+      --accent-green: #39d353;
+      --accent-cyan:  #58d7f7;
+      --text-primary: #e6edf3;
+      --text-muted:   #8b949e;
+      --border:       #30363d;
+      --font-mono:    'SF Mono', 'Fira Code', Consolas, monospace;
+      --font-sans:    system-ui, -apple-system, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-sans); line-height: 1.6; }
+
+    /* ── Nav ── */
+    nav { position: sticky; top: 0; z-index: 100; background: var(--bg-secondary); border-bottom: 1px solid var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 2rem; }
+    @media (max-width: 600px) { .nav-inner { padding: 0 1rem; } }
+    .nav-brand { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--accent-green); text-decoration: none; letter-spacing: -0.02em; }
+    .nav-brand span { color: var(--accent-cyan); }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-hamburger { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; padding: 0; flex-shrink: 0; }
+    .nav-hamburger span { display: block; width: 18px; height: 2px; background: var(--text-primary); border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    @media (max-width: 600px) {
+      .nav-hamburger { display: flex; }
+      .nav-links { display: none; flex-direction: column; gap: 0; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 0.5rem 0; z-index: 99; }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a { display: block; padding: 0.875rem 1.25rem; font-size: 1rem; border-bottom: 1px solid var(--border); }
+      .nav-links li:last-child a { border-bottom: none; }
+      .nav-links a:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
     }
 
-    [data-theme="dark"] {
-      --bg:        #0d0d0d;
-      --surface:   #1a1a1a;
-      --border:    #2a2a2a;
-      --border-2:  #222;
-      --text:      #f0f0f0;
-      --text-2:    #aaa;
-      --text-3:    #666;
-      --text-4:    #555;
-      --link:      #888;
-      --code-bg:   #2a2a2a;
-      --pre-bg:    #111;
-      --pre-fg:    #e8e8e8;
-      --pre-comment: #555;
-      --pre-cmd:   #79c0ff;
-      --btn-bg:    #f0f0f0;
-      --btn-fg:    #1a1a1a;
-      --btn-hover: #ffffff;
-      --copy-bg:   #2a2a2a;
-      --copy-fg:   #888;
-      --copy-hover:#444;
-      --step-bg:   #f0f0f0;
-      --step-fg:   #1a1a1a;
-      --badge-bg:  #2a2a2a;
-      --badge-br:  #3a3a3a;
-      --badge-fg:  #aaa;
-      --tag-bg:    #1a1f3a;
-      --tag-br:    #2a3a6a;
-      --tag-fg:    #7ba3ff;
-    }
+    /* ── Hero ── */
+    .hero { padding: 3.5rem 1rem 3rem; text-align: center; max-width: 860px; margin: 0 auto; }
+    @media (min-width: 601px) { .hero { padding: 5rem 2rem 4rem; } }
+    .hero-badge { display: inline-block; background: rgba(57,211,83,0.1); border: 1px solid rgba(57,211,83,0.3); color: var(--accent-green); font-family: var(--font-mono); font-size: 0.7rem; padding: 0.25rem 0.75rem; border-radius: 99px; margin-bottom: 1.25rem; letter-spacing: 0.04em; }
+    @media (min-width: 601px) { .hero-badge { font-size: 0.75rem; margin-bottom: 1.5rem; } }
+    .hero h1 { font-size: clamp(1.75rem, 7vw, 3.25rem); font-weight: 800; line-height: 1.15; margin-bottom: 1rem; letter-spacing: -0.03em; }
+    .hero h1 .highlight { color: var(--accent-cyan); }
+    .hero p { font-size: 1rem; color: var(--text-muted); max-width: 560px; margin: 0 auto 2rem; }
+    @media (min-width: 601px) { .hero p { font-size: 1.125rem; margin-bottom: 2.5rem; } }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      max-width: 680px;
-      margin: 60px auto;
-      padding: 0 24px;
-      color: var(--text);
-      background: var(--bg);
-      transition: background 0.2s, color 0.2s;
-    }
+    /* Terminal */
+    .terminal-window { background: var(--bg-terminal); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; text-align: left; max-width: 680px; margin: 0 auto 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .terminal-titlebar { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 0.6rem 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .terminal-dot.red    { background: #ff5f57; }
+    .terminal-dot.yellow { background: #febc2e; }
+    .terminal-dot.green  { background: #28c840; }
+    .terminal-title { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
+    .terminal-body { padding: 1rem 1rem 1.25rem; min-height: 100px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    @media (min-width: 601px) { .terminal-body { padding: 1.25rem 1.5rem 1.5rem; min-height: 120px; } }
+    .terminal-line { font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.8; white-space: nowrap; }
+    @media (min-width: 601px) { .terminal-line { font-size: 0.875rem; } }
+    .terminal-prompt { color: var(--accent-green); }
+    .terminal-cmd    { color: var(--text-primary); }
+    .terminal-output { color: var(--text-muted); }
+    .terminal-cursor { display: inline-block; width: 8px; height: 1em; background: var(--accent-green); vertical-align: text-bottom; animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
 
-    /* ── Header ── */
-    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-    h1 { font-size: 1.5rem; margin: 0; }
-    .header-right { display: flex; align-items: center; gap: 10px; }
-    .links { display: flex; gap: 8px; }
-    .links a {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 0.82rem; color: var(--text-2); text-decoration: none;
-      border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px;
-      background: var(--surface);
-    }
-    .links a:hover { background: var(--code-bg); color: var(--text); }
-    .subtitle { color: var(--text-3); font-size: 0.9rem; margin: 6px 0 32px; }
+    /* Copy area */
+    .copy-area { display: flex; flex-direction: column; align-items: stretch; gap: 0.75rem; justify-content: center; width: 100%; }
+    @media (min-width: 601px) { .copy-area { flex-direction: row; align-items: center; gap: 1rem; flex-wrap: wrap; } }
+    .install-cmd { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-primary); width: 100%; white-space: nowrap; overflow-x: auto; text-align: left; cursor: text; -webkit-overflow-scrolling: touch; }
+    @media (min-width: 601px) { .install-cmd { flex: 1; min-width: 0; max-width: 500px; font-size: 0.8rem; padding: 0.75rem 1.25rem; } }
+    .btn-copy { background: var(--accent-green); color: #0d1117; border: none; border-radius: 8px; padding: 0.875rem 1.25rem; font-family: var(--font-sans); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; min-height: 48px; }
+    @media (min-width: 601px) { .btn-copy { width: auto; padding: 0.75rem 1.25rem; font-size: 0.875rem; min-height: auto; } }
+    .btn-copy:hover  { background: #46e066; }
+    .btn-copy:active { transform: scale(0.97); }
+    .btn-copy.copied { background: var(--accent-cyan); }
 
-    /* ── Theme toggle ── */
-    .theme-toggle {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 4px 10px;
-      cursor: pointer;
-      font-size: 0.82rem;
-      color: var(--text-2);
-      display: inline-flex; align-items: center; gap: 5px;
-      font-family: inherit;
-    }
-    .theme-toggle:hover { background: var(--code-bg); color: var(--text); }
-
-    /* ── Cards ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px 24px;
-      margin-bottom: 16px;
-    }
-    .card h2 { font-size: 0.95rem; margin: 0 0 10px; }
-    .card p { color: var(--text-2); font-size: 0.875rem; margin: 0 0 8px; line-height: 1.6; }
-    .card p:last-child { margin-bottom: 0; }
-
-    /* ── Code & pre ── */
-    code {
-      background: var(--code-bg);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.82rem;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      color: var(--text);
-    }
-    pre {
-      background: var(--pre-bg);
-      color: var(--pre-fg);
-      border-radius: 8px;
-      padding: 14px 18px;
-      font-size: 0.8rem;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      overflow-x: auto;
-      margin: 12px 0 0;
-      line-height: 1.7;
-    }
-    pre .comment { color: var(--pre-comment); }
-    pre .cmd     { color: var(--pre-cmd); }
-
-    /* ── Copy button ── */
-    .copy-wrap { position: relative; }
-    .copy-btn {
-      position: absolute;
-      top: 8px; right: 8px;
-      background: var(--copy-bg);
-      color: var(--copy-fg);
-      border: none;
-      padding: 4px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 0.75rem;
-      font-family: inherit;
-    }
-    .copy-btn:hover { background: var(--copy-hover); color: var(--pre-fg); }
-
-    /* ── Tool table ── */
-    .tool-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .tool-table td {
-      font-size: 0.85rem;
-      padding: 6px 4px;
-      border-bottom: 1px solid var(--border-2);
-      vertical-align: top;
-    }
-    .tool-table tr:last-child td { border-bottom: none; }
-    .tool-table td:first-child { font-weight: 600; white-space: nowrap; padding-right: 16px; width: 38%; }
-    .tool-table td:last-child { color: var(--text-2); }
-
-    /* ── Skip table ── */
-    .skip-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .skip-table td {
-      font-size: 0.85rem;
-      padding: 6px 4px;
-      border-bottom: 1px solid var(--border-2);
-      vertical-align: top;
-    }
-    .skip-table tr:last-child td { border-bottom: none; }
-    .skip-table td:first-child { font-weight: 600; white-space: nowrap; padding-right: 16px; width: 38%; color: var(--text-3); }
-    .skip-table td:last-child { color: var(--text-4); font-size: 0.82rem; }
+    /* ── Sections ── */
+    section { padding: 3rem 1.25rem; }
+    @media (min-width: 601px) { section { padding: 4rem 2rem; } }
+    .hero-section { padding: 0 !important; }
+    section:nth-child(even) { background: var(--bg-secondary); }
+    .section-inner { max-width: 960px; margin: 0 auto; }
+    .section-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .section-title { font-size: clamp(1.35rem, 5vw, 1.75rem); font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .section-sub { color: var(--text-muted); margin-bottom: 2rem; max-width: 560px; font-size: 0.95rem; }
+    @media (min-width: 601px) { .section-sub { margin-bottom: 2.5rem; font-size: 1rem; } }
 
     /* ── Steps ── */
-    .steps { counter-reset: step; margin: 0; padding: 0; list-style: none; }
-    .steps li {
-      counter-increment: step;
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      margin-bottom: 14px;
-      font-size: 0.875rem;
-      color: var(--text-2);
-      line-height: 1.6;
-    }
-    .steps li:last-child { margin-bottom: 0; }
-    .steps li::before {
-      content: counter(step);
-      flex-shrink: 0;
-      width: 22px; height: 22px;
-      background: var(--step-bg);
-      color: var(--step-fg);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.72rem;
-      font-weight: 700;
-      margin-top: 1px;
-    }
+    .steps-list { display: flex; flex-direction: column; gap: 1.5rem; }
+    .step-item { display: flex; align-items: flex-start; gap: 1.25rem; }
+    .step-number { flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: rgba(57,211,83,0.12); border: 2px solid var(--accent-green); color: var(--accent-green); font-family: var(--font-mono); font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .step-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .step-content p  { color: var(--text-muted); font-size: 0.9rem; }
 
-    /* ── Badge ── */
-    .badge {
-      display: inline-block;
-      background: var(--badge-bg);
-      border: 1px solid var(--badge-br);
-      border-radius: 4px;
-      padding: 1px 8px;
-      font-size: 0.75rem;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      color: var(--badge-fg);
-      margin-right: 4px;
-    }
+    /* ── Tools grid ── */
+    .tools-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+    @media (max-width: 760px) { .tools-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 500px) { .tools-grid { grid-template-columns: 1fr; } }
+    .tools-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; transition: border-color 0.15s; }
+    .tools-card:hover { border-color: var(--accent-green); }
+    .tools-card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .tools-card-icon  { font-size: 1.25rem; }
+    .tools-card-title { font-size: 0.875rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.05em; }
+    .tools-card ul    { list-style: none; }
+    .tools-card li    { font-size: 0.875rem; color: var(--text-muted); padding: 0.2rem 0; display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+    .tools-card li::before { content: '›'; color: var(--accent-green); font-family: var(--font-mono); flex-shrink: 0; }
+    .tools-card li strong  { color: var(--text-primary); }
+    .skip-badge { display: inline-block; font-size: 0.68rem; font-family: var(--font-mono); background: rgba(255,100,100,0.1); border: 1px solid rgba(255,100,100,0.25); color: #f07070; border-radius: 4px; padding: 0 5px; line-height: 1.6; }
 
-    /* ── Section label ── */
-    .section-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-3);
-      margin: 18px 0 6px;
-    }
-    .section-label:first-child { margin-top: 0; }
+    /* ── Code blocks ── */
+    .code-block { background: var(--bg-terminal); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem 1rem; font-family: var(--font-mono); font-size: 0.75rem; overflow-x: auto; margin: 0.75rem 0; color: var(--text-primary); -webkit-overflow-scrolling: touch; }
+    @media (min-width: 601px) { .code-block { font-size: 0.85rem; padding: 1rem 1.25rem; } }
+    .code-block .comment { color: var(--text-muted); }
+    .code-block .cmd     { color: var(--accent-cyan); }
+
+    /* Flags table */
+    .flags-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 1.5rem; border: 1px solid var(--border); border-radius: 8px; }
+    .flags-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 480px; }
+    .flags-table th { text-align: left; padding: 0.6rem 1rem; background: var(--bg-terminal); color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+    .flags-table td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+    .flags-table td:first-child { font-family: var(--font-mono); color: var(--accent-cyan); white-space: nowrap; }
+    .flags-table tr:last-child td { border-bottom: none; }
+    .flags-table .highlight-row td { background: rgba(57,211,83,0.06); }
+    .flags-table .highlight-row td:first-child { color: var(--accent-green); }
+
+    /* ── Checklist ── */
+    .checklist { display: flex; flex-direction: column; gap: 0.875rem; }
+    .check-item { display: flex; align-items: flex-start; gap: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem 1rem; }
+    @media (min-width: 601px) { .check-item { gap: 0.875rem; padding: 1rem 1.25rem; } .checklist { gap: 1rem; } }
+    .check-box { flex-shrink: 0; width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px; margin-top: 3px; }
+    .check-item h4 { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .check-item p  { font-size: 0.825rem; color: var(--text-muted); word-break: break-word; }
+    .check-item code { font-family: var(--font-mono); font-size: 0.75rem; background: var(--bg-terminal); padding: 0.1rem 0.4rem; border-radius: 4px; color: var(--accent-cyan); word-break: break-all; }
 
     /* ── Footer ── */
-    footer {
-      text-align: center;
-      font-size: 0.8rem;
-      color: var(--text-3);
-      margin-top: 40px;
-      padding-bottom: 40px;
-    }
-    footer a { color: var(--link); text-decoration: none; }
-    footer a:hover { color: var(--text); }
+    footer { background: var(--bg-secondary); border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); }
+    footer a { color: var(--accent-cyan); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <div class="header">
-    <h1>TheVibeFounder Stack</h1>
-    <div class="header-right">
-      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
-        <svg id="icon-dark" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/></svg>
-        <svg id="icon-light" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2"/><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2"/><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/></svg>
-        <span id="theme-label">Dark</span>
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">setupai<span>.dev</span></a>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#options">Options</a></li>
+      <li><a href="#after">After Install</a></li>
+      <li><a href="light.html">Light Stack ⚡</a></li>
+      <li><a href="https://github.com/otto-ai-labs/setupai.dev">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero-section" style="background: var(--bg-primary);">
+  <div class="hero">
+    <div class="hero-badge">macOS · Intel &amp; Apple Silicon · Free &amp; Open Source</div>
+    <h1>Mac Setup for<br><span class="highlight">AI Builders</span></h1>
+    <p>One command. Go from a fresh Mac to shipping AI-powered products. Use <code style="background:rgba(88,215,247,0.1);color:var(--accent-cyan);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.85em">--light</code> for the lean build day setup — or run without flags for the full stack.</p>
+
+    <div class="terminal-window">
+      <div class="terminal-titlebar">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green"></div>
+        <div class="terminal-title">Terminal — zsh</div>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line">
+          <span class="terminal-prompt">❯ </span><span class="terminal-cmd" id="typewriter"></span><span class="terminal-cursor" id="cursor"></span>
+        </div>
+        <div class="terminal-line terminal-output" id="term-output-1" style="display:none"></div>
+        <div class="terminal-line terminal-output" id="term-output-2" style="display:none"></div>
+        <div class="terminal-line terminal-output" id="term-output-3" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="copy-area">
+      <div class="install-cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light</div>
+      <button class="btn-copy" id="copy-btn" onclick="copyInstallCmd()">
+        <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <span id="copy-label">Copy</span>
       </button>
-      <div class="links">
-        <a href="https://github.com/otto-ai-labs/setupai.dev" target="_blank">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.165c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .322.218.694.825.576C20.565 21.796 24 17.298 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          GitHub
-        </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-label">Quick Start</div>
+    <h2 class="section-title">Up and running in ~20 minutes.</h2>
+    <p class="section-sub">The <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg-terminal);padding:1px 6px;border-radius:4px;color:var(--accent-cyan)">--light</code> flag pre-deselects heavy tools so you only install what you actually need on a build day.</p>
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Open Terminal</h3>
+          <p>Press <strong>Cmd + Space</strong>, type <strong>Terminal</strong>, press Enter. Paste the command above and hit Enter.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Enter your Git details</h3>
+          <p>The script asks for your <strong>name</strong> and <strong>email</strong> — use the same ones as your GitHub account.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Choose your tools</h3>
+          <p>A checkbox menu appears for each category. With <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg-terminal);padding:1px 5px;border-radius:4px;color:var(--accent-cyan)">--light</code>, heavy tools are pre-unchecked. Use <strong>↑/↓</strong> to move, <strong>Space</strong> to toggle, <strong>D</strong> to confirm.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>Walk away</h3>
+          <p>Everything installs automatically. Takes around <strong>20 minutes</strong> on the light stack, up to 60 on the full install.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">5</div>
+        <div class="step-content">
+          <h3>Follow the after-install checklist</h3>
+          <p>Open a fresh terminal, add your SSH key to GitHub, set your API keys, and start building. See the <a href="#after" style="color:var(--accent-cyan)">After Install</a> section below.</p>
+        </div>
       </div>
     </div>
   </div>
-  <p class="subtitle">One command. Lean Mac setup for founders who ship AI products fast.</p>
+</section>
 
-  <!-- Quick Start -->
-  <div class="card">
-    <h2>Quick Start</h2>
-    <p>Open <strong>Terminal</strong> (<code>Cmd + Space</code> → type Terminal → Enter), paste this, and hit Enter:</p>
-    <div class="copy-wrap">
-      <pre id="cmd-light"><span class="cmd">bash</span> &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) <span class="cmd">--light</span></pre>
-      <button class="copy-btn" onclick="copyCmd('cmd-light', this)">Copy</button>
-    </div>
-    <p style="margin-top:12px; font-size:0.82rem; color:var(--text-3);">The script asks for your Git name &amp; email, then shows checkbox menus. Everything useful is already checked. Press <code>D</code> to confirm each menu. Takes ~20 min.</p>
-  </div>
+<!-- ── Tools ── -->
+<section id="tools">
+  <div class="section-inner">
+    <div class="section-label">What Gets Installed</div>
+    <h2 class="section-title">Everything you need. Nothing you don't.</h2>
+    <p class="section-sub">Tools marked <span class="skip-badge">skipped in --light</span> are off by default — you can toggle them back on in the menus.</p>
+    <div class="tools-grid">
 
-  <!-- How it works -->
-  <div class="card">
-    <h2>How it works</h2>
-    <ol class="steps">
-      <li><strong>Pre-flight</strong> — enter your Git name and email. Used to configure Git and generate your SSH key.</li>
-      <li><strong>Interactive menus</strong> — checkbox menu for each category. <code>--light</code> pre-deselects the heavy tools. Toggle anything back on, press <strong>D</strong> to confirm.</li>
-      <li><strong>Automated install</strong> — Homebrew, Python, Node, and your selected tools. Walk away for ~20 minutes.</li>
-      <li><strong>Shell setup</strong> — Oh My Zsh, Starship prompt, aliases, and PATH all written to <code>~/.zshrc</code>.</li>
-      <li><strong>Done</strong> — open a new terminal, add your SSH key to GitHub, set API keys, start shipping.</li>
-    </ol>
-  </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🤖</span><span class="tools-card-title">AI Tools</span></div>
+        <ul>
+          <li><strong>Claude Code</strong> — Anthropic's AI coding CLI</li>
+          <li><strong>Codex CLI</strong> — OpenAI's coding CLI</li>
+          <li><strong>GitHub CLI</strong> — manage repos &amp; PRs</li>
+          <li><strong>Ollama</strong> <span class="skip-badge">skipped in --light</span></li>
+          <li><strong>AWS CLI</strong> <span class="skip-badge">skipped in --light</span></li>
+          <li><strong>Terraform</strong> — infrastructure as code</li>
+          <li><strong>ngrok</strong> — expose localhost to internet</li>
+        </ul>
+      </div>
 
-  <!-- What you get -->
-  <div class="card">
-    <h2>What you get</h2>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🐍</span><span class="tools-card-title">Languages</span></div>
+        <ul>
+          <li><strong>Python 3.12</strong> — main AI/ML language</li>
+          <li><strong>uv</strong> — lightning-fast package manager</li>
+          <li><strong>Node.js LTS</strong> — via nvm</li>
+          <li><strong>virtualenv</strong> — isolated environments</li>
+          <li><strong>Python 3.11</strong> <span class="skip-badge">skipped in --light</span></li>
+          <li><strong>Jupyter / JupyterLab</strong> <span class="skip-badge">skipped in --light</span></li>
+        </ul>
+      </div>
 
-    <p class="section-label">Always installed</p>
-    <table class="tool-table">
-      <tr><td>Homebrew</td><td>Package manager for macOS</td></tr>
-      <tr><td>Git + SSH key</td><td>Auto-configured, tied to your GitHub email</td></tr>
-      <tr><td>Python 3.12 + uv</td><td>Python and the fastest package manager</td></tr>
-      <tr><td>Node.js LTS</td><td>Via nvm — required for Claude Code &amp; Codex</td></tr>
-      <tr><td>Oh My Zsh + Starship</td><td>A fast, clean, git-aware shell</td></tr>
-      <tr><td>bat, eza, ripgrep, fzf</td><td>Modern CLI tools for everyday use</td></tr>
-      <tr><td>jq, yq, htop, tree</td><td>Essential terminal utilities</td></tr>
-    </table>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">⚡</span><span class="tools-card-title">Shell &amp; Terminal</span></div>
+        <ul>
+          <li><strong>Oh My Zsh</strong> — shell enhancements</li>
+          <li><strong>Starship</strong> — smart, fast prompt</li>
+          <li><strong>bat</strong> — cat with syntax highlighting</li>
+          <li><strong>eza</strong> — modern ls with git status</li>
+          <li><strong>fzf, ripgrep, fd</strong> — fast search tools</li>
+        </ul>
+      </div>
 
-    <p class="section-label">On by default in <code>--light</code></p>
-    <table class="tool-table">
-      <tr><td>Claude Code</td><td>Anthropic's AI coding CLI — your main tool</td></tr>
-      <tr><td>Codex CLI</td><td>OpenAI's coding CLI</td></tr>
-      <tr><td>GitHub CLI</td><td>Manage repos, PRs, issues from the terminal</td></tr>
-      <tr><td>Redis + SQLite</td><td>Lightweight databases for local apps</td></tr>
-      <tr><td>Cursor</td><td>AI-native editor with built-in chat &amp; autocomplete</td></tr>
-      <tr><td>Warp</td><td>AI-powered terminal</td></tr>
-      <tr><td>Obsidian</td><td>Local markdown notes and knowledge base</td></tr>
-      <tr><td>iTerm2, Lungo, Shottr</td><td>Terminal, keep-awake, screenshot</td></tr>
-    </table>
-  </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🗄</span><span class="tools-card-title">Databases</span></div>
+        <ul>
+          <li><strong>Redis</strong> — in-memory cache &amp; queues</li>
+          <li><strong>SQLite</strong> — lightweight embedded DB</li>
+          <li><strong>PostgreSQL 15</strong> <span class="skip-badge">skipped in --light</span></li>
+          <li><strong>DuckDB</strong> <span class="skip-badge">skipped in --light</span></li>
+        </ul>
+      </div>
 
-  <!-- What's skipped -->
-  <div class="card">
-    <h2>Skipped by default <span class="badge">--light</span></h2>
-    <p>These are off in the menus — toggle back on if you need them.</p>
-    <table class="skip-table">
-      <tr><td>Ollama</td><td>Large download, GPU-heavy — use APIs instead</td></tr>
-      <tr><td>Jupyter</td><td>Heavyweight notebook server — not needed for most builds</td></tr>
-      <tr><td>Python 3.11</td><td>3.12 covers everything</td></tr>
-      <tr><td>PostgreSQL</td><td>Overkill for build days — SQLite handles most cases</td></tr>
-      <tr><td>DuckDB</td><td>Analytical DB — niche use case</td></tr>
-      <tr><td>VS Code</td><td>Cursor replaces it</td></tr>
-      <tr><td>Raycast</td><td>Great app, not essential day one</td></tr>
-      <tr><td>Rectangle / AltTab</td><td>Window manager extras — add later</td></tr>
-      <tr><td>LM Studio</td><td>GUI for local models — not needed with API access</td></tr>
-      <tr><td>DBeaver / TablePlus</td><td>DB GUIs — skip if you're fine in the terminal</td></tr>
-    </table>
-  </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">✏️</span><span class="tools-card-title">Editors</span></div>
+        <ul>
+          <li><strong>Cursor</strong> — AI-native editor with built-in chat</li>
+          <li><strong>VS Code</strong> <span class="skip-badge">skipped in --light</span></li>
+        </ul>
+      </div>
 
-  <!-- After install -->
-  <div class="card">
-    <h2>After the script finishes</h2>
-    <ol class="steps">
-      <li>Open a <strong>new terminal window</strong> (or run <code>source ~/.zshrc</code>).</li>
-      <li>Add your SSH key to GitHub — run <code>cat ~/.ssh/id_ed25519.pub</code>, paste it at <a href="https://github.com/settings/keys" target="_blank" style="color:var(--pre-cmd)">github.com/settings/keys</a>.</li>
-      <li>
-        Set your API keys in <code>~/.extra</code> (gitignored, auto-loaded by your shell):
-        <div class="copy-wrap">
-          <pre id="cmd-keys"><span class="comment"># ~/.extra</span>
-export ANTHROPIC_API_KEY='sk-ant-...'
-export OPENAI_API_KEY='sk-...'</pre>
-          <button class="copy-btn" onclick="copyCmd('cmd-keys', this)">Copy</button>
-        </div>
-      </li>
-      <li>Run <code>claude</code> or open <code>cursor .</code> in your project folder and start building.</li>
-      <li><strong>Restart your Mac</strong> to apply all system-level changes.</li>
-    </ol>
-  </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🚀</span><span class="tools-card-title">Productivity</span></div>
+        <ul>
+          <li><strong>Warp</strong> — AI-powered terminal</li>
+          <li><strong>iTerm2</strong> — classic terminal emulator</li>
+          <li><strong>Obsidian</strong> — local markdown notes</li>
+          <li><strong>Lungo</strong> — keep Mac awake</li>
+          <li><strong>Shottr</strong> — screenshots with OCR</li>
+          <li><strong>Raycast</strong> <span class="skip-badge">skipped in --light</span></li>
+          <li><strong>LM Studio</strong> <span class="skip-badge">skipped in --light</span></li>
+          <li><strong>Rectangle / AltTab</strong> <span class="skip-badge">skipped in --light</span></li>
+          <li><strong>DBeaver / TablePlus</strong> <span class="skip-badge">skipped in --light</span></li>
+        </ul>
+      </div>
 
-  <!-- Flags reference -->
-  <div class="card">
-    <h2>Other flags</h2>
-    <table class="tool-table">
-      <tr><td><code>--light</code></td><td>This page — lean build day setup</td></tr>
-      <tr><td><code>--yes</code></td><td>Auto-upgrade already-installed tools without prompting</td></tr>
-      <tr><td><code>--minimal</code></td><td>Languages + shell only, skips all menus</td></tr>
-      <tr><td><code>--skip-web</code></td><td>Skip JS/TypeScript toolchain</td></tr>
-      <tr><td><code>--skip-databases</code></td><td>Skip all database installs</td></tr>
-    </table>
-    <div class="copy-wrap">
-      <pre id="cmd-full"><span class="comment"># Full install (all tools, interactive menus)</span>
-<span class="cmd">bash</span> &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</pre>
-      <button class="copy-btn" onclick="copyCmd('cmd-full', this)">Copy</button>
     </div>
   </div>
+</section>
 
-  <footer>
-    Built by <a href="https://github.com/otto-ai-labs" target="_blank">otto-ai-labs</a> ·
-    <a href="https://github.com/otto-ai-labs/setupai.dev" target="_blank">View source</a> ·
-    MIT License
-  </footer>
+<!-- ── Options ── -->
+<section id="options">
+  <div class="section-inner">
+    <div class="section-label">Customise Your Install</div>
+    <h2 class="section-title">You choose exactly what gets installed.</h2>
+    <p class="section-sub">A checkbox menu appears before anything installs. Use flags to control the defaults.</p>
 
-  <script>
-    // ── Theme ──────────────────────────────────────────────────────────────────
-    const html = document.documentElement;
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      setTheme('dark');
+    <div class="code-block"><span class="comment"># Lean build day setup — recommended for most founders</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --light</div>
+
+    <div class="code-block"><span class="comment"># Full install — all tools, interactive menus</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span></div>
+
+    <div class="code-block"><span class="comment"># Light + auto-upgrade already-installed tools without prompting</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --light --yes</div>
+
+    <div class="code-block"><span class="comment"># Essentials only — languages and shell, no menus</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --minimal</div>
+
+    <div class="flags-table-wrap">
+      <table class="flags-table">
+        <thead><tr><th>Flag</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr class="highlight-row">
+            <td>--light</td>
+            <td>Lean build day setup — pre-deselects Ollama, Jupyter, Python 3.11, PostgreSQL, DuckDB, VS Code, Raycast, Rectangle, AltTab, LM Studio, DBeaver, TablePlus. Menus still shown so you can adjust.</td>
+          </tr>
+          <tr><td>--yes, -y</td><td>Auto-answers yes to upgrade prompts. Selection menus still appear.</td></tr>
+          <tr><td>--minimal</td><td>Skips all menus. Installs only languages and shell tools.</td></tr>
+          <tr><td>--skip-ai-tools</td><td>Skips the AI tools category entirely.</td></tr>
+          <tr><td>--skip-databases</td><td>Skips the databases category entirely.</td></tr>
+          <tr><td>--skip-web</td><td>Skips all web/JS tools — pnpm, TypeScript, ESLint, Vite, Bruno, and more.</td></tr>
+          <tr><td>--help</td><td>Shows all available options in the terminal.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── After Install ── -->
+<section id="after">
+  <div class="section-inner">
+    <div class="section-label">After Install</div>
+    <h2 class="section-title">You're almost ready to build.</h2>
+    <p class="section-sub">Complete these steps after the script finishes.</p>
+    <div class="checklist">
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><h4>Reload your terminal</h4><p>Close the window and open a fresh one, or run <code>source ~/.zshrc</code>.</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><h4>Add your SSH key to GitHub</h4><p>Run <code>cat ~/.ssh/id_ed25519.pub</code>, copy the output, and add it at <a href="https://github.com/settings/keys" style="color:var(--accent-cyan)">github.com/settings/keys</a>.</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><h4>Set your API keys</h4><p>Add to <code>~/.extra</code> (gitignored, auto-loaded):<br><code>export ANTHROPIC_API_KEY='sk-ant-...'</code><br><code>export OPENAI_API_KEY='sk-...'</code></p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><h4>Start building</h4><p>Run <code>claude</code> or open <code>cursor .</code> in your project folder.</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><h4>Restart your Mac</h4><p>Ensures all system-level changes (animations, Dock, performance tweaks) take full effect.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>
+    <a href="https://github.com/otto-ai-labs/setupai.dev">setupai.dev</a> &nbsp;·&nbsp;
+    <a href="https://github.com/otto-ai-labs/setupai.dev">GitHub</a> &nbsp;·&nbsp;
+    <a href="light.html">Light Stack ⚡</a> &nbsp;·&nbsp;
+    MIT License &nbsp;·&nbsp;
+    Built by otto-ai-labs
+  </p>
+</footer>
+
+<script>
+  const INSTALL_CMD = 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light';
+  const OUTPUTS = [
+    '[INFO] Light mode — skipping Ollama, Jupyter, PostgreSQL...',
+    '[INFO] Installing Claude Code, Cursor, Redis, SQLite...',
+    '[SUCCESS] TheVibeFounder Build Day Stack ready! ⚡',
+  ];
+  const typewriterEl = document.getElementById('typewriter');
+  const cursorEl     = document.getElementById('cursor');
+  let charIndex = 0, outputIndex = 0, typingDone = false;
+  function typeChar() {
+    if (charIndex < INSTALL_CMD.length) {
+      typewriterEl.textContent += INSTALL_CMD[charIndex++];
+      setTimeout(typeChar, 28);
+    } else if (!typingDone) {
+      typingDone = true; cursorEl.style.display = 'none';
+      setTimeout(showOutputs, 600);
     }
-
-    function setTheme(t) {
-      html.setAttribute('data-theme', t);
-      localStorage.setItem('theme', t);
-      document.getElementById('theme-label').textContent = t === 'dark' ? 'Light' : 'Dark';
-      document.getElementById('icon-dark').style.display  = t === 'dark' ? 'block' : 'none';
-      document.getElementById('icon-light').style.display = t === 'dark' ? 'none'  : 'block';
+  }
+  function showOutputs() {
+    if (outputIndex < OUTPUTS.length) {
+      const el = document.getElementById('term-output-' + (outputIndex + 1));
+      if (el) { el.textContent = OUTPUTS[outputIndex]; el.style.display = 'block'; }
+      outputIndex++; setTimeout(showOutputs, 700);
     }
+  }
+  setTimeout(typeChar, 500);
 
-    function toggleTheme() {
-      setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  const hamburger = document.getElementById('nav-hamburger');
+  const navLinks  = document.getElementById('nav-links');
+  hamburger.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+    navLinks.classList.remove('open'); hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }));
+
+  const COPY_TEXT = 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light';
+  function copyInstallCmd() {
+    const btn = document.getElementById('copy-btn');
+    const label = document.getElementById('copy-label');
+    const icon  = document.getElementById('copy-icon');
+    const checkSVG = '<polyline points="20 6 9 17 4 12"></polyline>';
+    const copySVG  = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
+    function onSuccess() {
+      btn.classList.add('copied'); label.textContent = 'Copied!'; icon.innerHTML = checkSVG;
+      setTimeout(() => { btn.classList.remove('copied'); label.textContent = 'Copy'; icon.innerHTML = copySVG; }, 2000);
     }
-
-    // ── Copy ───────────────────────────────────────────────────────────────────
-    function copyCmd(id, btn) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
-      });
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(COPY_TEXT).then(onSuccess).catch(fallback);
+    } else { fallback(); }
+    function fallback() {
+      const ta = document.createElement('textarea');
+      ta.value = COPY_TEXT; ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand('copy'); onSuccess(); } catch(e) {}
+      document.body.removeChild(ta);
     }
-  </script>
-
+  }
+</script>
 </body>
 </html>
