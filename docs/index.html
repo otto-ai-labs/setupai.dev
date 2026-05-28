@@ -364,10 +364,10 @@
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span></div>
 
     <div class="section-label" style="margin-top:1.5rem">Windows (PowerShell as Admin)</div>
-    <div class="code-block"><span class="comment"># Lean build day setup</span>
-<span class="cmd">irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1 | iex</span> <span class="comment">-Light</span></div>
+    <div class="code-block"><span class="comment"># One-liner — clones repo and runs setup</span>
+<span class="cmd">irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/install.ps1 | iex</span></div>
 
-    <div class="code-block"><span class="comment"># Or clone first and run locally</span>
+    <div class="code-block"><span class="comment"># Or clone first to pass your own flags</span>
 git clone https://github.com/otto-ai-labs/setupai.dev.git
 cd setupai.dev\windows
 <span class="cmd">.\setup.ps1</span> -Light</div>
@@ -437,7 +437,7 @@ cd setupai.dev\windows
 <script>
   const CMDS = {
     mac: 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)',
-    win: '$s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; & ([scriptblock]::Create($s))'
+    win: 'irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/install.ps1 | iex'
   };
   let currentOS = 'mac';
 

@@ -51,7 +51,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/mai
 Open **PowerShell 7** as Administrator and run:
 
 ```powershell
-$s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; & ([scriptblock]::Create($s))
+irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/install.ps1 | iex
 ```
 
 Or clone first and run locally:

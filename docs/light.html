@@ -236,13 +236,13 @@
         </div>
         <div class="terminal-body">
           <div class="terminal-line">
-            <span class="terminal-prompt" style="color:var(--accent-cyan)">PS&gt; </span><span class="terminal-cmd" style="color:var(--text-primary);font-size:0.72rem">$s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; &amp; ([scriptblock]::Create($s))</span>
+            <span class="terminal-prompt" style="color:var(--accent-cyan)">PS&gt; </span><span class="terminal-cmd" style="color:var(--text-primary);font-size:0.72rem">irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/install.ps1 | iex</span>
           </div>
         </div>
       </div>
 
       <div class="copy-area">
-        <div class="install-cmd" id="win-cmd" style="font-size:0.68rem">$s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; &amp; ([scriptblock]::Create($s))</div>
+        <div class="install-cmd" id="win-cmd">irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/install.ps1 | iex</div>
         <button class="btn-copy" id="win-copy-btn" onclick="copyWinCmd()">
           <svg id="win-copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -420,7 +420,7 @@
 <script>
   const CMDS = {
     mac: 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light',
-    win: '$s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; & ([scriptblock]::Create($s))'
+    win: 'irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/install.ps1 | iex'
   };
   let currentOS = 'mac';
 

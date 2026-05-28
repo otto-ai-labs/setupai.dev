@@ -9,10 +9,12 @@
     Installs AI development tools, languages, databases, editors, and
     productivity apps using Winget (built-in) and Scoop.
 
-    Run directly (PowerShell 7+ recommended, run as Administrator):
-        $s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; & ([scriptblock]::Create($s))
+    Run via one-liner (PowerShell 7+ recommended, run as Administrator):
+        irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/install.ps1 | iex
 
     Or clone and run:
+        git clone https://github.com/otto-ai-labs/setupai.dev.git
+        cd setupai.dev\windows
         .\setup.ps1
 
     Requires: PowerShell 5.1+ (7+ recommended), Windows 10 1809+ or Windows 11
@@ -51,7 +53,6 @@
 # design of continuing even when individual installs fail.
 $ErrorActionPreference = 'Continue'
 
-[CmdletBinding()]
 param(
     [switch]$Light,
     [switch]$Minimal,
@@ -65,13 +66,39 @@ param(
 # ── Help ──────────────────────────────────────────────────────────────────────
 
 if ($Help) {
-    Get-Help $MyInvocation.MyCommand.Path -Detailed
+    Write-Host @"
+AI Dev Setup — Windows
+
+USAGE
+  .\setup.ps1 [-Light] [-Minimal] [-SkipAiTools] [-SkipDatabases] [-SkipWeb] [-Yes]
+
+FLAGS
+  -Light          Lean setup — skips Ollama, PostgreSQL, DuckDB, VS Code, PowerToys, LM Studio
+  -Minimal        Languages + shell only, no menus
+  -SkipAiTools    Skip AI tools category
+  -SkipDatabases  Skip databases category
+  -SkipWeb        Skip JS/web tools (pnpm, TypeScript, ESLint, Vite, Vercel CLI)
+  -Yes            Auto-answer yes to upgrade prompts
+  -Help           Show this help
+
+EXAMPLES
+  .\setup.ps1
+  .\setup.ps1 -Light
+  .\setup.ps1 -Minimal
+  .\setup.ps1 -SkipDatabases -Yes
+"@
     exit 0
 }
 
 # ── Resolve script directory ───────────────────────────────────────────────────
+# When run via the one-liner (irm ... | temp file), MyCommand.Path is the temp
+# file path. When cloned and run directly, it's the actual script path.
 
-$ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
+$ScriptDir = if ($MyInvocation.MyCommand.Path) {
+    Split-Path $MyInvocation.MyCommand.Path -Parent
+} else {
+    $PSScriptRoot
+}
 
 # ── Load shared utilities ─────────────────────────────────────────────────────
 
