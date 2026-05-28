@@ -174,7 +174,7 @@
   <div class="hero">
     <div class="hero-badge">macOS · Windows · Intel &amp; Apple Silicon · Free &amp; Open Source</div>
     <h1>Setup for<br><span class="highlight">AI Builders</span></h1>
-    <p>One command. Go from a fresh Mac or Windows PC to shipping AI-powered products. Use <code style="background:rgba(88,215,247,0.1);color:var(--accent-cyan);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.85em">--light</code> for the lean build day setup.</p>
+    <p>One command. Go from a fresh Mac or Windows PC to shipping AI-powered products. Want the lean build day setup? See the <a href="light.html" style="color:var(--accent-cyan)">Light Stack ⚡</a> (macOS only).</p>
 
     <!-- OS tabs -->
     <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1rem;">
@@ -200,7 +200,7 @@
     </div>
 
     <div class="copy-area">
-      <div class="install-cmd" id="install-cmd-display">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light</div>
+      <div class="install-cmd" id="install-cmd-display">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</div>
       <button class="btn-copy" id="copy-btn" onclick="copyInstallCmd()">
         <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -218,7 +218,7 @@
   <div class="section-inner">
     <div class="section-label">Quick Start</div>
     <h2 class="section-title">Up and running in ~20 minutes.</h2>
-    <p class="section-sub">The <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg-terminal);padding:1px 6px;border-radius:4px;color:var(--accent-cyan)">--light</code> flag pre-deselects heavy tools so you only install what you actually need on a build day.</p>
+    <p class="section-sub">An interactive checkbox menu appears before anything installs — pick exactly what you want. Want a faster lean setup? Use the <a href="light.html" style="color:var(--accent-cyan)">Light Stack ⚡</a> (macOS).</p>
     <div class="steps-list">
       <div class="step-item">
         <div class="step-number">1</div>
@@ -427,7 +427,7 @@ cd setupai.dev\windows
 
 <script>
   const CMDS = {
-    mac: 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light',
+    mac: 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)',
     win: 'irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1 | iex'
   };
   let currentOS = 'mac';
@@ -456,8 +456,8 @@ cd setupai.dev\windows
 
   const INSTALL_CMD = CMDS.mac;
   const OUTPUTS = [
-    '[INFO] Light mode — skipping Ollama, Jupyter, PostgreSQL...',
-    '[INFO] Installing Claude Code, Cursor, Redis, SQLite...',
+    '[INFO] Installing Python 3.12, Node.js, uv...',
+    '[INFO] Installing Claude Code, Cursor, Ollama, PostgreSQL...',
     '[SUCCESS] AI Builder Stack ready! ⚡',
   ];
   const typewriterEl = document.getElementById('typewriter');
