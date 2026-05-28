@@ -3,14 +3,16 @@
 > **One script. AI development, ready to go.**
 
 [![macOS](https://img.shields.io/badge/macOS-11%2B-blue?logo=apple)](https://www.apple.com/macos/)
+[![Windows](https://img.shields.io/badge/Windows-10%2F11-blue?logo=windows)](https://www.microsoft.com/windows/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Shell](https://img.shields.io/badge/Shell-Bash-green?logo=gnu-bash)](https://www.gnu.org/software/bash/)
 
 ![SetupAI.dev — hero screenshot](assets/hero.png)
 
-Set up your Mac for AI development in a single command. Installs Python, Jupyter, Ollama, Claude Code, Codex CLI, and everything else you need to start building AI applications — whether you're a total beginner or an experienced engineer.
+Set up your Mac **or Windows PC** for AI development in a single command. Installs Python, Jupyter, Ollama, Claude Code, Codex CLI, and everything else you need to start building AI applications — whether you're a total beginner or an experienced engineer.
 
-Works on both **Intel** and **Apple Silicon** Macs (M1, M2, M3, M4 and later).
+**macOS:** Works on both **Intel** and **Apple Silicon** Macs (M1, M2, M3, M4 and later).
+**Windows:** Works on **Windows 10 (1809+)** and **Windows 11** via PowerShell + Winget.
 
 **Website:** [setupai.dev](https://setupai.dev)
 
@@ -20,6 +22,7 @@ Works on both **Intel** and **Apple Silicon** Macs (M1, M2, M3, M4 and later).
 
 - [Before You Start](#before-you-start)
 - [Quick Start](#quick-start)
+- [Windows Setup](#windows-setup)
 - [What Gets Installed](#what-gets-installed)
 - [macOS System Changes](#macos-system-changes)
 - [Installation Options](#installation-options)
@@ -28,6 +31,48 @@ Works on both **Intel** and **Apple Silicon** Macs (M1, M2, M3, M4 and later).
 - [Security & Privacy](#security--privacy)
 - [Performance Tips](#performance-tips)
 - [Contributing](#contributing)
+
+---
+
+## Quick Start — macOS
+
+Open the **Terminal** app (press **Cmd + Space**, type **Terminal**, press Enter) and paste:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)
+```
+
+> See [Windows Setup](#windows-setup) below if you're on Windows.
+
+---
+
+## Windows Setup
+
+Open **PowerShell 7** as Administrator and run:
+
+```powershell
+irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1 | iex
+```
+
+Or clone first and run locally:
+
+```powershell
+git clone https://github.com/otto-ai-labs/setupai.dev.git
+cd setupai.dev\windows
+.\setup.ps1
+```
+
+**Requirements:** Windows 10 (1809+) or Windows 11, PowerShell 5.1+ (7+ recommended), `winget` installed (comes with App Installer from the Microsoft Store).
+
+**Windows flags work the same way:**
+```powershell
+.\setup.ps1 -Light      # Lean build day setup
+.\setup.ps1 -Minimal    # Languages + shell only
+.\setup.ps1 -Yes        # Auto-upgrade without prompting
+.\setup.ps1 -Help       # Show all options
+```
+
+**Windows uses:** Winget + Scoop (instead of Homebrew), Oh My Posh (instead of Oh My Zsh), nvm-windows, PowerShell `$PROFILE` (instead of `.zshrc`), and PowerToys (replaces Raycast + Rectangle + AltTab).
 
 ---
 
@@ -52,32 +97,19 @@ You can walk away during most of the installation. Just stay nearby in case a po
 
 ---
 
-## Quick Start
-
-Open the **Terminal** app (press **Cmd + Space**, type **Terminal**, press Enter) and paste one of the following commands.
-
-> **New:** The script now shows an interactive menu before installing. Use **↑/↓** to move, **Space** or **Enter** to toggle, **D** to confirm, **A** to select all, **N** to deselect all.
-
-### Option A — Run directly (fastest)
+### macOS options
 
 ```bash
+# Run directly (fastest)
 bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)
-```
 
-### Option B — Download first, then run (recommended if you want to review the scripts)
-
-```bash
-# Step 1: Download the repository
+# Or clone first and review scripts before running
 git clone https://github.com/otto-ai-labs/setupai.dev.git
-
-# Step 2: Move into the folder
 cd setupai.dev
-
-# Step 3: Run it
 ./setup.sh
 ```
 
-> **What is Terminal?** Terminal is an app on your Mac that lets you type commands directly to your computer. Think of it as a text-based way to control your Mac — very powerful for developers.
+> The script shows an interactive checkbox menu before installing. Use **↑/↓** to move, **Space** to toggle, **D** to confirm.
 
 ---
 

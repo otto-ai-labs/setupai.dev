@@ -172,16 +172,22 @@
 <!-- ── Hero ── -->
 <section class="hero-section" style="background: var(--bg-primary);">
   <div class="hero">
-    <div class="hero-badge">macOS · Intel &amp; Apple Silicon · Free &amp; Open Source</div>
-    <h1>Mac Setup for<br><span class="highlight">AI Builders</span></h1>
-    <p>One command. Go from a fresh Mac to shipping AI-powered products. Use <code style="background:rgba(88,215,247,0.1);color:var(--accent-cyan);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.85em">--light</code> for the lean build day setup — or run without flags for the full stack.</p>
+    <div class="hero-badge">macOS · Windows · Intel &amp; Apple Silicon · Free &amp; Open Source</div>
+    <h1>Setup for<br><span class="highlight">AI Builders</span></h1>
+    <p>One command. Go from a fresh Mac or Windows PC to shipping AI-powered products. Use <code style="background:rgba(88,215,247,0.1);color:var(--accent-cyan);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.85em">--light</code> for the lean build day setup.</p>
+
+    <!-- OS tabs -->
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1rem;">
+      <button id="tab-mac" onclick="switchOS('mac')" style="font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--accent-green);background:var(--accent-green);color:#0d1117;font-weight:700;cursor:pointer;">macOS</button>
+      <button id="tab-win" onclick="switchOS('win')" style="font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;">Windows</button>
+    </div>
 
     <div class="terminal-window">
       <div class="terminal-titlebar">
         <div class="terminal-dot red"></div>
         <div class="terminal-dot yellow"></div>
         <div class="terminal-dot green"></div>
-        <div class="terminal-title">Terminal — zsh</div>
+        <div class="terminal-title" id="term-title">Terminal — zsh</div>
       </div>
       <div class="terminal-body">
         <div class="terminal-line">
@@ -194,7 +200,7 @@
     </div>
 
     <div class="copy-area">
-      <div class="install-cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light</div>
+      <div class="install-cmd" id="install-cmd-display">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light</div>
       <button class="btn-copy" id="copy-btn" onclick="copyInstallCmd()">
         <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -203,6 +209,7 @@
         <span id="copy-label">Copy</span>
       </button>
     </div>
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;" id="win-note" style="display:none"></p>
   </div>
 </section>
 
@@ -340,32 +347,36 @@
     <h2 class="section-title">You choose exactly what gets installed.</h2>
     <p class="section-sub">A checkbox menu appears before anything installs. Use flags to control the defaults.</p>
 
+    <div class="section-label" style="margin-top:0">macOS</div>
     <div class="code-block"><span class="comment"># Lean build day setup — recommended for most founders</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --light</div>
 
     <div class="code-block"><span class="comment"># Full install — all tools, interactive menus</span>
 <span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span></div>
 
-    <div class="code-block"><span class="comment"># Light + auto-upgrade already-installed tools without prompting</span>
-<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --light --yes</div>
+    <div class="section-label" style="margin-top:1.5rem">Windows (PowerShell as Admin)</div>
+    <div class="code-block"><span class="comment"># Lean build day setup</span>
+<span class="cmd">irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1 | iex</span> <span class="comment">-Light</span></div>
 
-    <div class="code-block"><span class="comment"># Essentials only — languages and shell, no menus</span>
-<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --minimal</div>
+    <div class="code-block"><span class="comment"># Or clone first and run locally</span>
+git clone https://github.com/otto-ai-labs/setupai.dev.git
+cd setupai.dev\windows
+<span class="cmd">.\setup.ps1</span> -Light</div>
 
     <div class="flags-table-wrap">
       <table class="flags-table">
-        <thead><tr><th>Flag</th><th>What it does</th></tr></thead>
+        <thead><tr><th>Flag (macOS / Windows)</th><th>What it does</th></tr></thead>
         <tbody>
           <tr class="highlight-row">
-            <td>--light</td>
-            <td>Lean build day setup — pre-deselects Ollama, Jupyter, Python 3.11, PostgreSQL, DuckDB, VS Code, Raycast, Rectangle, AltTab, LM Studio, DBeaver, TablePlus. Menus still shown so you can adjust.</td>
+            <td>--light / -Light</td>
+            <td>Lean build day setup — pre-deselects Ollama, Jupyter, Python 3.11, PostgreSQL, DuckDB, VS Code, Raycast/PowerToys, LM Studio, DBeaver, TablePlus. Menus still shown so you can adjust.</td>
           </tr>
-          <tr><td>--yes, -y</td><td>Auto-answers yes to upgrade prompts. Selection menus still appear.</td></tr>
-          <tr><td>--minimal</td><td>Skips all menus. Installs only languages and shell tools.</td></tr>
-          <tr><td>--skip-ai-tools</td><td>Skips the AI tools category entirely.</td></tr>
-          <tr><td>--skip-databases</td><td>Skips the databases category entirely.</td></tr>
-          <tr><td>--skip-web</td><td>Skips all web/JS tools — pnpm, TypeScript, ESLint, Vite, Bruno, and more.</td></tr>
-          <tr><td>--help</td><td>Shows all available options in the terminal.</td></tr>
+          <tr><td>--yes, -y / -Yes</td><td>Auto-answers yes to upgrade prompts. Selection menus still appear.</td></tr>
+          <tr><td>--minimal / -Minimal</td><td>Skips all menus. Installs only languages and shell tools.</td></tr>
+          <tr><td>--skip-ai-tools / -SkipAiTools</td><td>Skips the AI tools category entirely.</td></tr>
+          <tr><td>--skip-databases / -SkipDatabases</td><td>Skips the databases category entirely.</td></tr>
+          <tr><td>--skip-web / -SkipWeb</td><td>Skips all web/JS tools — pnpm, TypeScript, ESLint, Vite, and more.</td></tr>
+          <tr><td>--help / -Help</td><td>Shows all available options in the terminal.</td></tr>
         </tbody>
       </table>
     </div>
@@ -415,11 +426,39 @@
 </footer>
 
 <script>
-  const INSTALL_CMD = 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light';
+  const CMDS = {
+    mac: 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light',
+    win: 'irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1 | iex'
+  };
+  let currentOS = 'mac';
+
+  function switchOS(os) {
+    currentOS = os;
+    const tabMac = document.getElementById('tab-mac');
+    const tabWin = document.getElementById('tab-win');
+    const display = document.getElementById('install-cmd-display');
+    const note    = document.getElementById('win-note');
+    const title   = document.getElementById('term-title');
+    const active  = 'font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--accent-green);background:var(--accent-green);color:#0d1117;font-weight:700;cursor:pointer;';
+    const inactive= 'font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;';
+    if (os === 'mac') {
+      tabMac.style.cssText = active; tabWin.style.cssText = inactive;
+      display.textContent = CMDS.mac;
+      note.textContent = '';
+      title.textContent = 'Terminal — zsh';
+    } else {
+      tabWin.style.cssText = active; tabMac.style.cssText = inactive;
+      display.textContent = CMDS.win;
+      note.textContent = 'Run PowerShell as Administrator. Requires Windows 10 (1809+) or Windows 11.';
+      title.textContent = 'PowerShell 7';
+    }
+  }
+
+  const INSTALL_CMD = CMDS.mac;
   const OUTPUTS = [
     '[INFO] Light mode — skipping Ollama, Jupyter, PostgreSQL...',
     '[INFO] Installing Claude Code, Cursor, Redis, SQLite...',
-    '[SUCCESS] TheVibeFounder Build Day Stack ready! ⚡',
+    '[SUCCESS] AI Builder Stack ready! ⚡',
   ];
   const typewriterEl = document.getElementById('typewriter');
   const cursorEl     = document.getElementById('cursor');
@@ -454,8 +493,8 @@
     hamburger.setAttribute('aria-expanded', 'false');
   }));
 
-  const COPY_TEXT = 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light';
   function copyInstallCmd() {
+    const COPY_TEXT = CMDS[currentOS];
     const btn = document.getElementById('copy-btn');
     const label = document.getElementById('copy-label');
     const icon  = document.getElementById('copy-icon');

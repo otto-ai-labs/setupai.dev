@@ -3,20 +3,53 @@
 > **One command. Ship by end of day.**
 
 [![macOS](https://img.shields.io/badge/macOS-11%2B-blue?logo=apple)](https://www.apple.com/macos/)
+[![Windows](https://img.shields.io/badge/Windows-10%2F11-blue?logo=windows)](https://www.microsoft.com/windows/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Shell](https://img.shields.io/badge/Shell-Bash-green?logo=gnu-bash)](https://www.gnu.org/software/bash/)
+[![Shell](https://img.shields.io/badge/Shell-Bash%20%7C%20PowerShell-green)](https://www.gnu.org/software/bash/)
 
 ![TheVibeFounder Build Day Stack](assets/hero.png)
 
-The fastest way to go from a fresh Mac to shipping AI-powered products. No bloat, no noise — just the tools you actually reach for on a build day.
+The fastest way to go from a fresh Mac **or Windows PC** to shipping AI-powered products. No bloat, no noise — just the tools you actually reach for on a build day.
 
-Works on both **Intel** and **Apple Silicon** Macs (M1, M2, M3, M4 and later).
+**macOS:** Works on both **Intel** and **Apple Silicon** Macs (M1, M2, M3, M4 and later).
+**Windows:** Works on **Windows 10 (1809+)** and **Windows 11**.
+
+---
+
+## Quick Start
+
+### macOS
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light
+```
+
+### Windows
+
+Open **PowerShell** as Administrator:
+
+```powershell
+irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1 | iex
+```
+
+Or with the `-Light` flag for the same lean defaults:
+
+```powershell
+# Clone first (recommended so you can review before running)
+git clone https://github.com/otto-ai-labs/setupai.dev.git
+cd setupai.dev\windows
+.\setup.ps1 -Light
+```
+
+On Windows the script uses **Winget + Scoop** instead of Homebrew, **Oh My Posh** instead of Oh My Zsh, **nvm-windows** for Node, and **PowerToys** instead of Raycast/Rectangle/AltTab. Everything else is the same.
 
 ---
 
 ## Before You Start
 
-**1. Update macOS** — System Settings → General → Software Update.
+**macOS — Update your OS** — System Settings → General → Software Update.
+
+**Windows — Check PowerShell version** — Run `$PSVersionTable.PSVersion`. You need 5.1+; 7+ is recommended ([download](https://github.com/PowerShell/PowerShell/releases)).
 
 **2. Have your Git name and email ready** — same as your GitHub account.
 
@@ -28,53 +61,23 @@ Works on both **Intel** and **Apple Silicon** Macs (M1, M2, M3, M4 and later).
 
 ---
 
-## Quick Start
-
-### Step 1 — Open Terminal
-
-Press **Cmd + Space**, type **Terminal**, hit Enter.
-
-> Never used Terminal before? It's just a text-based way to control your Mac. You only need to paste one command.
-
-### Step 2 — Run the installer
-
-Paste this and hit Enter:
-
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light
-```
-
-The script will ask for your **Git name** and **Git email** first, then show you a checkbox menu for each category of tools.
-
-### Step 3 — Pick your tools
-
-Use the arrow keys and Space to toggle. Everything useful is already checked. Just press **D** to confirm each menu and move on.
-
-```
-  AI Tools  —  Tools for building and running AI applications
-  ────────────────────────────────────────────────────────────
-▶ [x] Claude Code           Anthropic AI coding CLI
-  [x] Codex CLI             OpenAI coding CLI
-  [ ] Ollama                Run LLMs locally (heavy — off by default)
-  [ ] AWS CLI               Access Bedrock, SageMaker and more
-  [x] GitHub CLI            Manage repos, PRs and issues
-  ────────────────────────────────────────────────────────────
-  Up/Down: move  Space/Enter: toggle  D: done  A: all  N: none
-```
-
-### Step 4 — Walk away
-
-The rest is automatic. Takes around 20 minutes on a good connection.
-
----
-
 ### Prefer to review the scripts first?
 
 ```bash
+# macOS
 git clone https://github.com/otto-ai-labs/setupai.dev.git
 cd setupai.dev
 ./setup.sh --light
+
+# Windows (PowerShell as Admin)
+git clone https://github.com/otto-ai-labs/setupai.dev.git
+cd setupai.dev\windows
+.\setup.ps1 -Light
 ```
+
+### How it works
+
+The script asks for your **Git name** and **Git email**, then shows checkbox menus for each category. Everything useful is already checked — press **D** (macOS) or the same key on Windows to confirm each menu and move on. Takes ~20 minutes.
 
 ---
 
@@ -157,6 +160,8 @@ cursor .     # Open current folder in Cursor
 
 ## Troubleshooting
 
+### macOS
+
 **`claude` not found:**
 ```bash
 source ~/.zshrc
@@ -178,6 +183,29 @@ export NVM_DIR="$HOME/.nvm"
 **A package failed:** Check `~/ai-dev-setup_DATE_TIME.log`, then install manually:
 ```bash
 brew install <package>
+npm install -g <package>
+```
+
+### Windows
+
+**`claude` not found:**
+```powershell
+. $PROFILE
+npm install -g @anthropic-ai/claude-code
+```
+
+**`node` / `npm` not found:**
+```powershell
+. $PROFILE
+nvm install lts
+nvm use lts
+```
+
+**`winget` not found:** Install "App Installer" from the Microsoft Store, then re-run.
+
+**A package failed:** Check `$env:USERPROFILE\ai-dev-setup_DATE_TIME.log`, then install manually:
+```powershell
+winget install <WingetId>
 npm install -g <package>
 ```
 

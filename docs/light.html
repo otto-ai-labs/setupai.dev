@@ -174,16 +174,22 @@
 <!-- ── Hero ── -->
 <section class="hero-section" style="background: var(--bg-primary);">
   <div class="hero">
-    <div class="hero-badge">⚡ Light — Lean Build Day Setup</div>
+    <div class="hero-badge">⚡ Light — macOS &amp; Windows · Lean Build Day Setup</div>
     <h1>TheVibeFounder<br><span class="highlight">Build Day Stack</span></h1>
     <p>No bloat. Just Claude, Cursor, and the tools you actually reach for on a build day. One command, ~20 minutes, and you're shipping.</p>
+
+    <!-- OS tabs -->
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1rem;">
+      <button id="tab-mac" onclick="switchOS('mac')" style="font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--accent-green);background:var(--accent-green);color:#0d1117;font-weight:700;cursor:pointer;">macOS</button>
+      <button id="tab-win" onclick="switchOS('win')" style="font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;">Windows</button>
+    </div>
 
     <div class="terminal-window">
       <div class="terminal-titlebar">
         <div class="terminal-dot red"></div>
         <div class="terminal-dot yellow"></div>
         <div class="terminal-dot green"></div>
-        <div class="terminal-title">Terminal — zsh</div>
+        <div class="terminal-title" id="term-title">Terminal — zsh</div>
       </div>
       <div class="terminal-body">
         <div class="terminal-line">
@@ -196,7 +202,7 @@
     </div>
 
     <div class="copy-area">
-      <div class="install-cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light</div>
+      <div class="install-cmd" id="install-cmd-display">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light</div>
       <button class="btn-copy" id="copy-btn" onclick="copyInstallCmd()">
         <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -205,6 +211,7 @@
         <span id="copy-label">Copy</span>
       </button>
     </div>
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;" id="win-note"></p>
   </div>
 </section>
 
@@ -370,7 +377,35 @@
 </footer>
 
 <script>
-  const INSTALL_CMD = 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light';
+  const CMDS = {
+    mac: 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light',
+    win: 'irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1 | iex'
+  };
+  let currentOS = 'mac';
+
+  function switchOS(os) {
+    currentOS = os;
+    const tabMac = document.getElementById('tab-mac');
+    const tabWin = document.getElementById('tab-win');
+    const display = document.getElementById('install-cmd-display');
+    const note    = document.getElementById('win-note');
+    const title   = document.getElementById('term-title');
+    const active  = 'font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--accent-green);background:var(--accent-green);color:#0d1117;font-weight:700;cursor:pointer;';
+    const inactive= 'font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;';
+    if (os === 'mac') {
+      tabMac.style.cssText = active; tabWin.style.cssText = inactive;
+      display.textContent = CMDS.mac;
+      note.textContent = '';
+      title.textContent = 'Terminal — zsh';
+    } else {
+      tabWin.style.cssText = active; tabMac.style.cssText = inactive;
+      display.textContent = CMDS.win;
+      note.textContent = 'Run PowerShell as Administrator. Requires Windows 10 (1809+) or Windows 11. Use -Light flag for the lean defaults.';
+      title.textContent = 'PowerShell 7';
+    }
+  }
+
+  const INSTALL_CMD = CMDS.mac;
   const OUTPUTS = [
     '[INFO] Light mode — skipping Ollama, Jupyter, PostgreSQL...',
     '[INFO] Installing Claude Code, Cursor, Redis, SQLite...',
@@ -409,8 +444,8 @@
     hamburger.setAttribute('aria-expanded', 'false');
   }));
 
-  const COPY_TEXT = 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light';
   function copyInstallCmd() {
+    const COPY_TEXT = CMDS[currentOS];
     const btn   = document.getElementById('copy-btn');
     const label = document.getElementById('copy-label');
     const icon  = document.getElementById('copy-icon');
