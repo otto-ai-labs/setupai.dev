@@ -5,7 +5,7 @@
 # Dot-sourced by setup.ps1:
 #   . "$PSScriptRoot\modules\ai.ps1"
 
-. "$PSScriptRoot\utils.ps1"
+if (-not (Get-Command Write-Info -ErrorAction SilentlyContinue)) { . "$PSScriptRoot\utils.ps1" }
 
 if ($env:SKIP_AI_TOOLS -eq "true") {
     Write-Info "Step 6: Skipping AI tools (--SkipAiTools flag)"

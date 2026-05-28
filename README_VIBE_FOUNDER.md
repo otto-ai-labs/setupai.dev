@@ -29,7 +29,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/mai
 Open **PowerShell** as Administrator:
 
 ```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1)))
+$s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; & ([scriptblock]::Create($s))
 ```
 
 Or with the `-Light` flag for the same lean defaults:

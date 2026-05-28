@@ -75,6 +75,17 @@
     .terminal-cursor { display: inline-block; width: 8px; height: 1em; background: var(--accent-green); vertical-align: text-bottom; animation: blink 1s step-end infinite; }
     @keyframes blink { 50% { opacity: 0; } }
 
+    /* OS tab switcher */
+    .os-tabs { display: flex; gap: 0; margin-bottom: 1rem; justify-content: center; }
+    .os-tab { background: none; border: 1px solid var(--border); color: var(--text-muted); font-family: var(--font-mono); font-size: 0.8rem; padding: 0.45rem 1.1rem; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .os-tab:first-child { border-radius: 6px 0 0 6px; }
+    .os-tab:last-child  { border-radius: 0 6px 6px 0; border-left: none; }
+    .os-tab.active { background: rgba(57,211,83,0.15); border-color: var(--accent-green); color: var(--accent-green); }
+    .os-panel { display: none; }
+    .os-panel.active { display: block; }
+    .win-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center; }
+    .win-note span { color: #f0a070; }
+
     /* Copy area */
     .copy-area { display: flex; flex-direction: column; align-items: stretch; gap: 0.75rem; justify-content: center; width: 100%; }
     @media (min-width: 601px) { .copy-area { flex-direction: row; align-items: center; gap: 1rem; flex-wrap: wrap; } }
@@ -178,32 +189,69 @@
     <h1>TheVibeFounder<br><span class="highlight">Build Day Stack</span></h1>
     <p>No bloat. Just Claude, Cursor, and the tools you actually reach for on a build day. One command, ~20 minutes, and you're shipping.</p>
 
-    <div class="terminal-window">
-      <div class="terminal-titlebar">
-        <div class="terminal-dot red"></div>
-        <div class="terminal-dot yellow"></div>
-        <div class="terminal-dot green"></div>
-        <div class="terminal-title">Terminal — zsh</div>
-      </div>
-      <div class="terminal-body">
-        <div class="terminal-line">
-          <span class="terminal-prompt">❯ </span><span class="terminal-cmd" id="typewriter"></span><span class="terminal-cursor" id="cursor"></span>
+    <div class="os-tabs">
+      <button class="os-tab active" id="tab-mac" onclick="switchOS('mac')">🍎 macOS</button>
+      <button class="os-tab" id="tab-win" onclick="switchOS('win')">🪟 Windows</button>
+    </div>
+
+    <!-- macOS panel -->
+    <div class="os-panel active" id="panel-mac">
+      <div class="terminal-window">
+        <div class="terminal-titlebar">
+          <div class="terminal-dot red"></div>
+          <div class="terminal-dot yellow"></div>
+          <div class="terminal-dot green"></div>
+          <div class="terminal-title">Terminal — zsh</div>
         </div>
-        <div class="terminal-line terminal-output" id="term-output-1" style="display:none"></div>
-        <div class="terminal-line terminal-output" id="term-output-2" style="display:none"></div>
-        <div class="terminal-line terminal-output" id="term-output-3" style="display:none"></div>
+        <div class="terminal-body">
+          <div class="terminal-line">
+            <span class="terminal-prompt">❯ </span><span class="terminal-cmd" id="typewriter"></span><span class="terminal-cursor" id="cursor"></span>
+          </div>
+          <div class="terminal-line terminal-output" id="term-output-1" style="display:none"></div>
+          <div class="terminal-line terminal-output" id="term-output-2" style="display:none"></div>
+          <div class="terminal-line terminal-output" id="term-output-3" style="display:none"></div>
+        </div>
+      </div>
+
+      <div class="copy-area">
+        <div class="install-cmd" id="mac-cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light</div>
+        <button class="btn-copy" id="copy-btn" onclick="copyInstallCmd()">
+          <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="copy-label">Copy</span>
+        </button>
       </div>
     </div>
 
-    <div class="copy-area">
-      <div class="install-cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light</div>
-      <button class="btn-copy" id="copy-btn" onclick="copyInstallCmd()">
-        <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        <span id="copy-label">Copy</span>
-      </button>
+    <!-- Windows panel -->
+    <div class="os-panel" id="panel-win">
+      <div class="terminal-window">
+        <div class="terminal-titlebar">
+          <div class="terminal-dot red"></div>
+          <div class="terminal-dot yellow"></div>
+          <div class="terminal-dot green"></div>
+          <div class="terminal-title">PowerShell — Admin</div>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-line">
+            <span class="terminal-prompt" style="color:var(--accent-cyan)">PS&gt; </span><span class="terminal-cmd" style="color:var(--text-primary);font-size:0.72rem">$s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; &amp; ([scriptblock]::Create($s))</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="copy-area">
+        <div class="install-cmd" id="win-cmd" style="font-size:0.68rem">$s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; &amp; ([scriptblock]::Create($s))</div>
+        <button class="btn-copy" id="win-copy-btn" onclick="copyWinCmd()">
+          <svg id="win-copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="win-copy-label">Copy</span>
+        </button>
+      </div>
+      <p class="win-note"><span>Note:</span> Windows doesn't have a --light variant — this installs the full stack. Run PowerShell as Administrator.</p>
     </div>
   </div>
 </section>
@@ -370,7 +418,21 @@
 </footer>
 
 <script>
-  const INSTALL_CMD = 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light';
+  const CMDS = {
+    mac: 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light',
+    win: '$s = irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1; & ([scriptblock]::Create($s))'
+  };
+  let currentOS = 'mac';
+
+  function switchOS(os) {
+    currentOS = os;
+    document.getElementById('panel-mac').classList.toggle('active', os === 'mac');
+    document.getElementById('panel-win').classList.toggle('active', os === 'win');
+    document.getElementById('tab-mac').classList.toggle('active', os === 'mac');
+    document.getElementById('tab-win').classList.toggle('active', os === 'win');
+  }
+
+  const INSTALL_CMD = CMDS.mac;
   const OUTPUTS = [
     '[INFO] Light mode — skipping Ollama, Jupyter, PostgreSQL...',
     '[INFO] Installing Claude Code, Cursor, Redis, SQLite...',
@@ -409,11 +471,10 @@
     hamburger.setAttribute('aria-expanded', 'false');
   }));
 
-  function copyInstallCmd() {
-    const COPY_TEXT = INSTALL_CMD;
-    const btn   = document.getElementById('copy-btn');
-    const label = document.getElementById('copy-label');
-    const icon  = document.getElementById('copy-icon');
+  function doCopy(text, btnId, labelId, iconId) {
+    const btn   = document.getElementById(btnId);
+    const label = document.getElementById(labelId);
+    const icon  = document.getElementById(iconId);
     const checkSVG = '<polyline points="20 6 9 17 4 12"></polyline>';
     const copySVG  = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
     function onSuccess() {
@@ -421,16 +482,19 @@
       setTimeout(() => { btn.classList.remove('copied'); label.textContent = 'Copy'; icon.innerHTML = copySVG; }, 2000);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(COPY_TEXT).then(onSuccess).catch(fallback);
+      navigator.clipboard.writeText(text).then(onSuccess).catch(fallback);
     } else { fallback(); }
     function fallback() {
       const ta = document.createElement('textarea');
-      ta.value = COPY_TEXT; ta.style.cssText = 'position:fixed;opacity:0';
+      ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
       document.body.appendChild(ta); ta.focus(); ta.select();
       try { document.execCommand('copy'); onSuccess(); } catch(e) {}
       document.body.removeChild(ta);
     }
   }
+
+  function copyInstallCmd() { doCopy(CMDS.mac, 'copy-btn', 'copy-label', 'copy-icon'); }
+  function copyWinCmd()     { doCopy(CMDS.win, 'win-copy-btn', 'win-copy-label', 'win-copy-icon'); }
 </script>
 </body>
 </html>

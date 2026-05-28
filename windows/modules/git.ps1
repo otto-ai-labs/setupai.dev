@@ -5,7 +5,7 @@
 # Dot-sourced by setup.ps1:
 #   . "$PSScriptRoot\modules\git.ps1"
 
-. "$PSScriptRoot\utils.ps1"
+if (-not (Get-Command Write-Info -ErrorAction SilentlyContinue)) { . "$PSScriptRoot\utils.ps1" }
 
 Write-Info "Step 10: Configuring Git..."
 

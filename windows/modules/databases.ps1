@@ -11,7 +11,7 @@
 # Dot-sourced by setup.ps1:
 #   . "$PSScriptRoot\modules\databases.ps1"
 
-. "$PSScriptRoot\utils.ps1"
+if (-not (Get-Command Write-Info -ErrorAction SilentlyContinue)) { . "$PSScriptRoot\utils.ps1" }
 
 if ($env:SKIP_DATABASES -eq "true") {
     Write-Info "Step 7: Skipping databases (--SkipDatabases flag)"

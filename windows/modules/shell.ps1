@@ -12,7 +12,7 @@
 # Dot-sourced by setup.ps1:
 #   . "$PSScriptRoot\modules\shell.ps1"
 
-. "$PSScriptRoot\utils.ps1"
+if (-not (Get-Command Write-Info -ErrorAction SilentlyContinue)) { . "$PSScriptRoot\utils.ps1" }
 
 Write-Info "Step 11: Configuring shell..."
 
@@ -40,13 +40,13 @@ if ($nerdFontInstalled) {
 else {
     Write-Info "Installing CaskaydiaCove Nerd Font (required for Oh My Posh icons)..."
     try {
-        oh-my-posh font install CascadiaCode 2>&1 | Out-Null
-        Write-Success "CascadiaCode Nerd Font installed"
+        oh-my-posh font install CaskaydiaCove 2>&1 | Out-Null
+        Write-Success "CaskaydiaCove Nerd Font installed"
         Write-Info "Set 'CaskaydiaCove Nerd Font' as your terminal font to enable icons."
     }
     catch {
         Write-Warn "Font install failed. Install manually:"
-        Write-Warn "  oh-my-posh font install CascadiaCode"
+        Write-Warn "  oh-my-posh font install CaskaydiaCove"
         Write-Warn "  or download from https://www.nerdfonts.com/font-downloads"
     }
 }
