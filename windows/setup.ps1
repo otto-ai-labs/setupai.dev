@@ -10,7 +10,7 @@
     productivity apps using Winget (built-in) and Scoop.
 
     Run directly (PowerShell 7+ recommended, run as Administrator):
-        irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1 | iex
+        & ([scriptblock]::Create((irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/setup.ps1)))
 
     Or clone and run:
         .\setup.ps1
