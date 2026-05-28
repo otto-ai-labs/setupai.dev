@@ -13,7 +13,9 @@ else
     log_success "Python 3.12 already installed"
 fi
 
-if ! brew list python@3.11 &>/dev/null; then
+if [[ "${LIGHT:-false}" == true ]]; then
+    log_info "Light mode — skipping Python 3.11"
+elif ! brew list python@3.11 &>/dev/null; then
     log_info "Installing Python 3.11..."
     brew_install_with_timeout python@3.11 || true
 else
@@ -34,8 +36,10 @@ else
 fi
 
 # Jupyter — interactive notebooks for AI/data work
-log_info "Installing Jupyter (this may take a few minutes)..."
-if command_exists pip3; then
+if [[ "${LIGHT:-false}" == true ]]; then
+    log_info "Light mode — skipping Jupyter"
+elif command_exists pip3; then
+    log_info "Installing Jupyter (this may take a few minutes)..."
     pip3 install jupyter jupyterlab || true
     log_success "Jupyter and JupyterLab installed"
 fi

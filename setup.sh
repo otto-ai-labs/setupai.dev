@@ -49,6 +49,7 @@ SKIP_AI_TOOLS=false
 SKIP_DATABASES=false
 SKIP_WEB=false
 MINIMAL=false
+LIGHT=false
 UPGRADE_ALL=false
 
 while [[ "$#" -gt 0 ]]; do
@@ -57,12 +58,16 @@ while [[ "$#" -gt 0 ]]; do
         --skip-databases) SKIP_DATABASES=true ;;
         --minimal)        MINIMAL=true ;;
         --skip-web)       SKIP_WEB=true ;;
+        --light)          LIGHT=true ;;
         --yes|-y)         UPGRADE_ALL=true ;;
         --help)
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
             echo "  --yes, -y          Auto-answer yes to upgrade prompts for already-installed tools"
+            echo "  --light            Lighter install — skips Ollama, AWS CLI, PostgreSQL, DuckDB,"
+            echo "                     VS Code, Jupyter, and heavy GUI apps (Raycast, Rectangle,"
+            echo "                     AltTab, LM Studio, DBeaver, TablePlus)"
             echo "  --skip-ai-tools    Skip AI tools (Ollama, Claude Code, Codex CLI)"
             echo "  --skip-databases   Skip database installations"
             echo "  --skip-web         Skip JS web development tools (web.sh)"
@@ -86,7 +91,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Export flags so modules and sub-scripts can read them
-export SKIP_AI_TOOLS SKIP_DATABASES SKIP_WEB MINIMAL UPGRADE_ALL
+export SKIP_AI_TOOLS SKIP_DATABASES SKIP_WEB MINIMAL LIGHT UPGRADE_ALL
 
 # ── Pre-flight: collect inputs BEFORE exec/tee redirect ─────────────────────
 # The tee-based logging below can swallow prompts, making read hang.
@@ -118,14 +123,26 @@ if [[ "$MINIMAL" == false ]]; then
     local _sel_tmp
     _sel_tmp=$(mktemp)
 
+    # In --light mode, heavy tools default to off in the menus
+    local _L_ollama="on" _L_awscli="off"
+    local _L_postgresql="on" _L_duckdb="off"
+    local _L_vscode="on"
+    local _L_raycast="on" _L_rectangle="on" _L_alttab="on" _L_lmstudio="on" _L_dbeaver="on" _L_tableplus="off"
+    if [[ "$LIGHT" == true ]]; then
+        _L_ollama="off" _L_awscli="off"
+        _L_postgresql="off" _L_duckdb="off"
+        _L_vscode="off"
+        _L_raycast="off" _L_rectangle="off" _L_alttab="off" _L_lmstudio="off" _L_dbeaver="off" _L_tableplus="off"
+    fi
+
     # ── AI Tools ─────────────────────────────────────────────────────────────
     : > "$_sel_tmp"
     checkbox_select "$_sel_tmp" \
         "AI Tools" "Tools for building and running AI applications" \
-        "ollama|Ollama|Run LLMs locally — Llama, Mistral, Gemma (no API key needed)|on" \
+        "ollama|Ollama|Run LLMs locally — Llama, Mistral, Gemma (no API key needed)|$_L_ollama" \
         "claude|Claude Code|Anthropic AI coding CLI (needs ANTHROPIC_API_KEY)|on" \
         "codex|Codex CLI|OpenAI coding CLI (needs OPENAI_API_KEY)|on" \
-        "awscli|AWS CLI|Access Bedrock, SageMaker and other AWS AI services|off" \
+        "awscli|AWS CLI|Access Bedrock, SageMaker and other AWS AI services|$_L_awscli" \
         "terraform|Terraform|Infrastructure as code for AI deployments|off" \
         "gh|GitHub CLI|Manage repos, PRs and issues from the terminal|on" \
         "ngrok|ngrok|Expose localhost to the internet for webhooks & demos|off"
@@ -136,10 +153,10 @@ if [[ "$MINIMAL" == false ]]; then
     : > "$_sel_tmp"
     checkbox_select "$_sel_tmp" \
         "Databases" "Local databases for development (not auto-started)" \
-        "postgresql|PostgreSQL 15|Most popular open-source relational database|on" \
+        "postgresql|PostgreSQL 15|Most popular open-source relational database|$_L_postgresql" \
         "redis|Redis|In-memory cache, queues, and session store|on" \
         "sqlite|SQLite|Lightweight embedded database — great for local AI apps|on" \
-        "duckdb|DuckDB|Fast in-process analytical DB — SQL on files, no server|off"
+        "duckdb|DuckDB|Fast in-process analytical DB — SQL on files, no server|$_L_duckdb"
     SEL_DB=()
     while IFS= read -r _line; do [[ -n "$_line" ]] && SEL_DB+=("$_line"); done < "$_sel_tmp"
 
@@ -147,7 +164,7 @@ if [[ "$MINIMAL" == false ]]; then
     : > "$_sel_tmp"
     checkbox_select "$_sel_tmp" \
         "Editors" "Code editors — pick one or both" \
-        "vscode|VS Code|Popular free editor with Python, Jupyter, Claude & Copilot|on" \
+        "vscode|VS Code|Popular free editor with Python, Jupyter, Claude & Copilot|$_L_vscode" \
         "cursor|Cursor|AI-native VS Code fork with built-in chat & autocomplete|on"
     SEL_EDITORS=()
     while IFS= read -r _line; do [[ -n "$_line" ]] && SEL_EDITORS+=("$_line"); done < "$_sel_tmp"
@@ -156,15 +173,15 @@ if [[ "$MINIMAL" == false ]]; then
     : > "$_sel_tmp"
     checkbox_select "$_sel_tmp" \
         "Productivity Apps" "GUI apps and Mac utilities" \
-        "raycast|Raycast|AI-powered Spotlight replacement with clipboard history|on" \
+        "raycast|Raycast|AI-powered Spotlight replacement with clipboard history|$_L_raycast" \
         "warp|Warp|AI terminal with natural language commands|on" \
-        "lmstudio|LM Studio|GUI app to run local AI models — no terminal needed|on" \
+        "lmstudio|LM Studio|GUI app to run local AI models — no terminal needed|$_L_lmstudio" \
         "iterm2|iTerm2|Classic terminal emulator with tabs & split panes|on" \
-        "rectangle|Rectangle|Snap windows with keyboard shortcuts|on" \
+        "rectangle|Rectangle|Snap windows with keyboard shortcuts|$_L_rectangle" \
         "obsidian|Obsidian|Local markdown notes and knowledge base|on" \
-        "dbeaver|DBeaver|Universal database GUI for Postgres, SQLite and more|on" \
-        "tableplus|TablePlus|Fast native Mac database GUI|off" \
-        "alt-tab|AltTab|Windows-style app switcher with live previews|on" \
+        "dbeaver|DBeaver|Universal database GUI for Postgres, SQLite and more|$_L_dbeaver" \
+        "tableplus|TablePlus|Fast native Mac database GUI|$_L_tableplus" \
+        "alt-tab|AltTab|Windows-style app switcher with live previews|$_L_alttab" \
         "bartender|Bartender|Organise and hide menu bar icons|off" \
         "lungo|Lungo|Keep Mac awake during long installs or downloads|on" \
         "shottr|Shottr|Fast screenshot tool with annotations and OCR|on"
@@ -229,6 +246,7 @@ fi
 
 log_info "========================================="
 log_info "AI Dev Setup"
+[[ "$LIGHT" == true ]] && log_info "Mode: Light (--light)"
 log_info "========================================="
 log_info "Architecture: $ARCH_NAME ($ARCH)"
 log_info "macOS Version: $macos_version"
@@ -300,33 +318,50 @@ echo "  Python 3.11: $(${BREW_PREFIX}/opt/python@3.11/bin/python3.11 --version 2
 echo "  Node:        $(node --version 2>/dev/null || echo 'N/A')"
 echo "  npm:         $(npm --version 2>/dev/null || echo 'N/A')"
 echo "  uv:          $(uv --version 2>/dev/null || echo 'N/A')"
-echo "  Jupyter:     $(jupyter --version 2>/dev/null | head -1 || echo 'N/A')"
-echo "  Ollama:      $(ollama --version 2>/dev/null || echo 'N/A')"
+if [[ "$LIGHT" != true ]]; then
+    echo "  Jupyter:     $(jupyter --version 2>/dev/null | head -1 || echo 'N/A')"
+    echo "  Ollama:      $(ollama --version 2>/dev/null || echo 'N/A')"
+fi
 echo "  Claude Code: $(claude --version 2>/dev/null || echo 'N/A')"
 echo "  Git:         $(git --version 2>/dev/null || echo 'N/A')"
 echo "  gh:          $(gh --version 2>/dev/null | head -1 || echo 'N/A')"
 echo "  ngrok:       $(ngrok --version 2>/dev/null || echo 'N/A')"
-echo "  duckdb:      $(duckdb --version 2>/dev/null || echo 'N/A')"
+if [[ "$LIGHT" != true ]]; then
+    echo "  duckdb:      $(duckdb --version 2>/dev/null || echo 'N/A')"
+fi
 echo ""
 
 echo ""
-echo "  ╔══════════════════════════════════════════════════════╗"
-echo "  ║  IMPORTANT: Open a NEW terminal window before       ║"
-echo "  ║  running claude, ollama, or jupyter.                ║"
-echo "  ║                                                      ║"
-echo "  ║  Or run:  source ~/.zshrc                           ║"
-echo "  ╚══════════════════════════════════════════════════════╝"
+if [[ "$LIGHT" == true ]]; then
+    echo "  ╔══════════════════════════════════════════════════════╗"
+    echo "  ║  IMPORTANT: Open a NEW terminal window before       ║"
+    echo "  ║  running claude or node commands.                   ║"
+    echo "  ║                                                      ║"
+    echo "  ║  Or run:  source ~/.zshrc                           ║"
+    echo "  ╚══════════════════════════════════════════════════════╝"
+else
+    echo "  ╔══════════════════════════════════════════════════════╗"
+    echo "  ║  IMPORTANT: Open a NEW terminal window before       ║"
+    echo "  ║  running claude, ollama, or jupyter.                ║"
+    echo "  ║                                                      ║"
+    echo "  ║  Or run:  source ~/.zshrc                           ║"
+    echo "  ╚══════════════════════════════════════════════════════╝"
+fi
 echo ""
 
 log_info "Next steps:"
 echo "  1. *** Open a NEW terminal window (required for PATH to update) ***"
 echo "  2. Run: claude          ← start Claude Code"
-echo "  3. Run: ollama run llama3  ← run a local AI model"
-echo "  4. Run: jupyter lab     ← open Jupyter (or use alias: jl)"
+if [[ "$LIGHT" != true ]]; then
+    echo "  3. Run: ollama run llama3  ← run a local AI model"
+    echo "  4. Run: jupyter lab     ← open Jupyter (or use alias: jl)"
+fi
 echo ""
 log_info "If any command is still not found after reopening terminal:"
 echo "  claude  → npm install -g @anthropic-ai/claude-code"
-echo "  ollama  → brew install ollama"
+if [[ "$LIGHT" != true ]]; then
+    echo "  ollama  → brew install ollama"
+fi
 echo "  node    → source ~/.zshrc"
 echo ""
 echo "  - Set your API keys (add to ~/.extra):"

@@ -69,10 +69,6 @@ command -v starship &>/dev/null && eval "\$(starship init zsh)"
 alias python='python3'
 alias pip='pip3'
 
-# Jupyter aliases
-alias jl='jupyter lab'
-alias jn='jupyter notebook'
-
 # Aliases - DISABLED to allow both traditional and modern tools to coexist
 # Uncomment any aliases you want to use:
 # alias ls='eza'
@@ -98,6 +94,9 @@ alias jn='jupyter notebook'
 
 # === End ai-dev-setup Config ===
 EOF
+    if [[ "${LIGHT:-false}" != true ]]; then
+        printf '\nalias jl=%sjupiter lab%s\nalias jn=%sjupiter notebook%s\n' "'" "'" "'" "'" >> "$HOME/.zshrc"
+    fi
     log_success "Custom shell configurations added"
 else
     log_info "Custom shell configurations already present, skipping"

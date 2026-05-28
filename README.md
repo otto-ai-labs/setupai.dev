@@ -357,6 +357,9 @@ Each tool has a sensible default (shown as `[x]`). Just press **Enter** through 
 ./setup.sh [OPTIONS]
 
   --yes, -y          Auto-answer yes to upgrade prompts for already-installed tools
+  --light            Lighter install — pre-deselects Ollama, AWS CLI, PostgreSQL,
+                     DuckDB, VS Code, Jupyter, Raycast, Rectangle, AltTab,
+                     LM Studio, DBeaver, and TablePlus
   --minimal          Essentials only — languages + shell. Skips all menus entirely
   --skip-ai-tools    Skip the AI tools category entirely
   --skip-databases   Skip the databases category entirely
@@ -372,6 +375,9 @@ Flags go **after** the closing parenthesis:
 # Auto-upgrade already-installed tools without prompting
 bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes
 
+# Lighter install (pre-deselects heavy tools)
+bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --light
+
 # Auto-upgrade and skip databases category
 bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh) --yes --skip-databases
 
@@ -384,6 +390,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/mai
 ```bash
 # Re-run and upgrade all tools without any prompts
 ./setup.sh --yes
+
+# Lighter install — skips heavy tools, still shows menus so you can tune further
+./setup.sh --light
 
 # Essentials only — languages and CLI tools
 ./setup.sh --minimal
