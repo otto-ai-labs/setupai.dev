@@ -85,6 +85,15 @@
     .btn-copy:active { transform: scale(0.97); }
     .btn-copy.copied { background: var(--accent-cyan); }
 
+    /* OS tab switcher */
+    .os-tabs { display: flex; gap: 0; margin-bottom: 1rem; justify-content: center; }
+    .os-tab { background: none; border: 1px solid var(--border); color: var(--text-muted); font-family: var(--font-mono); font-size: 0.8rem; padding: 0.45rem 1.1rem; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .os-tab:first-child { border-radius: 6px 0 0 6px; }
+    .os-tab:last-child  { border-radius: 0 6px 6px 0; border-left: none; }
+    .os-tab.active { background: rgba(57,211,83,0.15); border-color: var(--accent-green); color: var(--accent-green); }
+    .win-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center; }
+    .win-note span { color: #f0a070; }
+
     /* ── Sections ── */
     section { padding: 3rem 1.25rem; }
     @media (min-width: 601px) { section { padding: 4rem 2rem; } }
@@ -177,9 +186,9 @@
     <p>One command. Go from a fresh Mac or Windows PC to shipping AI-powered products. Want the lean build day setup? See the <a href="light.html" style="color:var(--accent-cyan)">Light Stack ⚡</a> (macOS only).</p>
 
     <!-- OS tabs -->
-    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1rem;">
-      <button id="tab-mac" onclick="switchOS('mac')" style="font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--accent-green);background:var(--accent-green);color:#0d1117;font-weight:700;cursor:pointer;">macOS</button>
-      <button id="tab-win" onclick="switchOS('win')" style="font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;">Windows</button>
+    <div class="os-tabs">
+      <button class="os-tab active" id="tab-mac" onclick="switchOS('mac')">🍎 macOS</button>
+      <button class="os-tab" id="tab-win" onclick="switchOS('win')">🪟 Windows</button>
     </div>
 
     <div class="terminal-window">
@@ -209,7 +218,7 @@
         <span id="copy-label">Copy</span>
       </button>
     </div>
-    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;" id="win-note" style="display:none"></p>
+    <p class="win-note" id="win-note"></p>
   </div>
 </section>
 
@@ -434,22 +443,18 @@ cd setupai.dev\windows
 
   function switchOS(os) {
     currentOS = os;
-    const tabMac = document.getElementById('tab-mac');
-    const tabWin = document.getElementById('tab-win');
+    document.getElementById('tab-mac').classList.toggle('active', os === 'mac');
+    document.getElementById('tab-win').classList.toggle('active', os === 'win');
     const display = document.getElementById('install-cmd-display');
     const note    = document.getElementById('win-note');
     const title   = document.getElementById('term-title');
-    const active  = 'font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--accent-green);background:var(--accent-green);color:#0d1117;font-weight:700;cursor:pointer;';
-    const inactive= 'font-family:var(--font-mono);font-size:0.8rem;padding:6px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;';
     if (os === 'mac') {
-      tabMac.style.cssText = active; tabWin.style.cssText = inactive;
       display.textContent = CMDS.mac;
-      note.textContent = '';
+      note.innerHTML = '';
       title.textContent = 'Terminal — zsh';
     } else {
-      tabWin.style.cssText = active; tabMac.style.cssText = inactive;
       display.textContent = CMDS.win;
-      note.textContent = 'Run PowerShell as Administrator. Requires Windows 10 (1809+) or Windows 11.';
+      note.innerHTML = '<span>Note:</span> Run PowerShell as Administrator. Requires Windows 10 (1809+) or Windows 11.';
       title.textContent = 'PowerShell 7';
     }
   }
