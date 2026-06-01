@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Remotion Project Setup — setupai.dev</title>
+  <meta name="description" content="Scaffold a new Remotion programmatic video project with one interactive command." />
+  <style>
+    :root {
+      --bg-primary:   #0d1117;
+      --bg-secondary: #161b22;
+      --bg-terminal:  #1e2530;
+      --accent-green: #39d353;
+      --accent-cyan:  #58d7f7;
+      --text-primary: #e6edf3;
+      --text-muted:   #8b949e;
+      --border:       #30363d;
+      --font-mono:    'SF Mono', 'Fira Code', Consolas, monospace;
+      --font-sans:    system-ui, -apple-system, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-sans); line-height: 1.6; }
+
+    /* ── Nav ── */
+    nav { position: sticky; top: 0; z-index: 100; background: var(--bg-secondary); border-bottom: 1px solid var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 2rem; }
+    @media (max-width: 600px) { .nav-inner { padding: 0 1rem; } }
+    .nav-brand { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--accent-green); text-decoration: none; letter-spacing: -0.02em; }
+    .nav-brand span { color: var(--accent-cyan); }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-hamburger { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; padding: 0; flex-shrink: 0; }
+    .nav-hamburger span { display: block; width: 18px; height: 2px; background: var(--text-primary); border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    @media (max-width: 600px) {
+      .nav-hamburger { display: flex; }
+      .nav-links { display: none; flex-direction: column; gap: 0; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 0.5rem 0; z-index: 99; }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a { display: block; padding: 0.875rem 1.25rem; font-size: 1rem; border-bottom: 1px solid var(--border); }
+      .nav-links li:last-child a { border-bottom: none; }
+      .nav-links a:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+    }
+
+    /* ── Hero ── */
+    .hero { padding: 3.5rem 1rem 3rem; text-align: center; max-width: 860px; margin: 0 auto; }
+    @media (min-width: 601px) { .hero { padding: 5rem 2rem 4rem; } }
+    .hero-badge { display: inline-block; background: rgba(57,211,83,0.1); border: 1px solid rgba(57,211,83,0.3); color: var(--accent-green); font-family: var(--font-mono); font-size: 0.7rem; padding: 0.25rem 0.75rem; border-radius: 99px; margin-bottom: 1.25rem; letter-spacing: 0.04em; }
+    @media (min-width: 601px) { .hero-badge { font-size: 0.75rem; margin-bottom: 1.5rem; } }
+    .hero h1 { font-size: clamp(1.75rem, 7vw, 3.25rem); font-weight: 800; line-height: 1.15; margin-bottom: 1rem; letter-spacing: -0.03em; }
+    .hero h1 .highlight { color: var(--accent-cyan); }
+    .hero p { font-size: 1rem; color: var(--text-muted); max-width: 560px; margin: 0 auto 2rem; }
+    @media (min-width: 601px) { .hero p { font-size: 1.125rem; margin-bottom: 2.5rem; } }
+
+    /* Terminal */
+    .terminal-window { background: var(--bg-terminal); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; text-align: left; max-width: 680px; margin: 0 auto 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .terminal-titlebar { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 0.6rem 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .terminal-dot.red    { background: #ff5f57; }
+    .terminal-dot.yellow { background: #febc2e; }
+    .terminal-dot.green  { background: #28c840; }
+    .terminal-title { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
+    .terminal-body { padding: 1rem 1rem 1.25rem; min-height: 100px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    @media (min-width: 601px) { .terminal-body { padding: 1.25rem 1.5rem 1.5rem; min-height: 120px; } }
+    .terminal-line { font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.8; white-space: nowrap; }
+    @media (min-width: 601px) { .terminal-line { font-size: 0.875rem; } }
+    .terminal-prompt { color: var(--accent-green); }
+    .terminal-cmd    { color: var(--text-primary); }
+    .terminal-output { color: var(--text-muted); }
+    .terminal-cursor { display: inline-block; width: 8px; height: 1em; background: var(--accent-green); vertical-align: text-bottom; animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Copy area */
+    .copy-area { display: flex; flex-direction: column; align-items: stretch; gap: 0.75rem; justify-content: center; width: 100%; }
+    @media (min-width: 601px) { .copy-area { flex-direction: row; align-items: center; gap: 1rem; flex-wrap: wrap; } }
+    .install-cmd { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-primary); width: 100%; white-space: nowrap; overflow-x: auto; text-align: left; cursor: text; -webkit-overflow-scrolling: touch; }
+    @media (min-width: 601px) { .install-cmd { flex: 1; min-width: 0; max-width: 500px; font-size: 0.8rem; padding: 0.75rem 1.25rem; } }
+    .btn-copy { background: var(--accent-green); color: #0d1117; border: none; border-radius: 8px; padding: 0.875rem 1.25rem; font-family: var(--font-sans); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; min-height: 48px; }
+    @media (min-width: 601px) { .btn-copy { width: auto; padding: 0.75rem 1.25rem; font-size: 0.875rem; min-height: auto; } }
+    .btn-copy:hover  { background: #46e066; }
+    .btn-copy:active { transform: scale(0.97); }
+    .btn-copy.copied { background: var(--accent-cyan); }
+
+    /* ── Sections ── */
+    section { padding: 3rem 1.25rem; }
+    @media (min-width: 601px) { section { padding: 4rem 2rem; } }
+    .hero-section { padding: 0 !important; }
+    section:nth-child(even) { background: var(--bg-secondary); }
+    .section-inner { max-width: 960px; margin: 0 auto; }
+    .section-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .section-title { font-size: clamp(1.35rem, 5vw, 1.75rem); font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .section-sub { color: var(--text-muted); margin-bottom: 2rem; max-width: 560px; font-size: 0.95rem; }
+    @media (min-width: 601px) { .section-sub { margin-bottom: 2.5rem; font-size: 1rem; } }
+
+    /* ── Steps ── */
+    .steps-list { display: flex; flex-direction: column; gap: 1.5rem; }
+    .step-item { display: flex; align-items: flex-start; gap: 1.25rem; }
+    .step-number { flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: rgba(57,211,83,0.12); border: 2px solid var(--accent-green); color: var(--accent-green); font-family: var(--font-mono); font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .step-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .step-content p  { color: var(--text-muted); font-size: 0.9rem; }
+
+    /* ── Templates grid ── */
+    .tools-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+    @media (max-width: 760px) { .tools-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 500px) { .tools-grid { grid-template-columns: 1fr; } }
+    .tools-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; transition: border-color 0.15s; }
+    .tools-card:hover { border-color: var(--accent-green); }
+    .tools-card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .tools-card-icon  { font-size: 1.25rem; }
+    .tools-card-title { font-size: 0.875rem; font-weight: 700; color: var(--accent-cyan); }
+    .tools-card p { font-size: 0.85rem; color: var(--text-muted); }
+    .rec-badge { display: inline-block; font-size: 0.68rem; font-family: var(--font-mono); background: rgba(57,211,83,0.1); border: 1px solid rgba(57,211,83,0.3); color: var(--accent-green); border-radius: 4px; padding: 0 5px; line-height: 1.6; margin-left: 4px; }
+
+    /* ── Code blocks ── */
+    .code-block { background: var(--bg-terminal); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem 1rem; font-family: var(--font-mono); font-size: 0.75rem; overflow-x: auto; margin: 0.75rem 0; color: var(--text-primary); -webkit-overflow-scrolling: touch; white-space: pre; }
+    @media (min-width: 601px) { .code-block { font-size: 0.85rem; padding: 1rem 1.25rem; } }
+    .code-block .comment { color: var(--text-muted); display: block; }
+    .code-block .cmd     { color: var(--accent-cyan); display: block; }
+
+    /* inline cyan code */
+    .ic { font-family: var(--font-mono); font-size: 0.85em; background: rgba(88,215,247,0.1); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px; }
+
+    /* ── Footer ── */
+    footer { background: var(--bg-secondary); border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); }
+    footer a { color: var(--accent-cyan); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">setupai<span>.dev</span></a>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#templates">Templates</a></li>
+      <li><a href="#render">Render</a></li>
+      <li><a href="index.html">Full Stack</a></li>
+      <li><a href="light.html">Light Stack ⚡</a></li>
+      <li><a href="https://github.com/otto-ai-labs/setupai.dev">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero-section" style="background: var(--bg-primary);">
+  <div class="hero">
+    <div class="hero-badge">Extra — macOS · Remotion · Programmatic Video with React</div>
+    <h1>Remotion<br><span class="highlight">Project Scaffold</span></h1>
+    <p>Scaffold a new <a href="https://remotion.dev" style="color:var(--accent-cyan)">Remotion</a> project with one interactive command. Pick a template, a package manager, and you're editing React components that render to video.</p>
+
+    <div class="terminal-window">
+      <div class="terminal-titlebar">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green"></div>
+        <div class="terminal-title">Terminal — zsh</div>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line">
+          <span class="terminal-prompt">❯ </span><span class="terminal-cmd" id="typewriter"></span><span class="terminal-cursor" id="cursor"></span>
+        </div>
+        <div class="terminal-line terminal-output" id="term-output-1" style="display:none"></div>
+        <div class="terminal-line terminal-output" id="term-output-2" style="display:none"></div>
+        <div class="terminal-line terminal-output" id="term-output-3" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="copy-area">
+      <div class="install-cmd" id="install-cmd-display">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/remotion-setup.sh) new</div>
+      <button class="btn-copy" id="copy-btn" onclick="copyInstallCmd()">
+        <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <span id="copy-label">Copy</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Three questions. Project ready.</h2>
+    <p class="section-sub">No configuration files to write — the script asks what you need and calls <code class="ic">npx create-video@latest</code> for you. Remotion bundles its own ffmpeg and Chromium so there are no extra system installs.</p>
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Check dependencies</h3>
+          <p>Verifies Node.js 16+ and npm. Everything else (ffmpeg, Chromium) is bundled by Remotion automatically.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Name your project</h3>
+          <p>Enter a directory name (default: <code class="ic">my-video</code>). The script exits early if the folder already exists.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Choose a template</h3>
+          <p>Pick from 11 starters — blank, hello-world, TikTok vertical, audiogram, React Three Fiber, Next.js, and more. Default is <strong>hello-world</strong>.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>Pick a package manager</h3>
+          <p>Choose npm, pnpm, bun, or yarn. Default is <strong>npm</strong>. The script passes your choice straight to <code class="ic">create-video</code>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Templates ── -->
+<section id="templates">
+  <div class="section-inner">
+    <div class="section-label">Templates</div>
+    <h2 class="section-title">11 starters. Pick the right one.</h2>
+    <p class="section-sub">Run <code class="ic">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/remotion-setup.sh) templates</code> to print this list in your terminal.</p>
+
+    <div class="tools-grid">
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">👋</span><span class="tools-card-title">hello-world <span class="rec-badge">recommended</span></span></div>
+        <p>Default starter with example animations. Best place to start.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">⬜</span><span class="tools-card-title">blank</span></div>
+        <p>Minimal starter — one composition, nothing extra. Clean slate.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🖼️</span><span class="tools-card-title">still</span></div>
+        <p>Single-frame image export. Great for generating dynamic OG images or thumbnails.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">📱</span><span class="tools-card-title">tiktok</span></div>
+        <p>Vertical 9:16 format. Pre-configured for short-form social video.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🎙️</span><span class="tools-card-title">audiogram</span></div>
+        <p>Podcast waveform visualizer. Renders audio waveforms over a static or animated background.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🎬</span><span class="tools-card-title">overlay</span></div>
+        <p>Video overlay / watermark. Composites elements on top of existing footage.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🧊</span><span class="tools-card-title">three</span></div>
+        <p>React Three Fiber (3D). Animate full 3D scenes and render them to video.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🎨</span><span class="tools-card-title">skia</span></div>
+        <p>React Native Skia (GPU drawing). High-performance 2D graphics and effects.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">▲</span><span class="tools-card-title">next-app</span></div>
+        <p>Next.js App Router + Remotion. Build a web app and a video renderer in one project.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">▲</span><span class="tools-card-title">next-pages</span></div>
+        <p>Next.js Pages Router + Remotion. Classic Next.js structure with Remotion integrated.</p>
+      </div>
+      <div class="tools-card">
+        <div class="tools-card-header"><span class="tools-card-icon">🛣️</span><span class="tools-card-title">react-router</span></div>
+        <p>React Router v7 + Remotion. Full-stack React app with server-side rendering and video.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Render ── -->
+<section id="render">
+  <div class="section-inner">
+    <div class="section-label">After Scaffolding</div>
+    <h2 class="section-title">Start the Studio. Render when ready.</h2>
+    <p class="section-sub">All commands run from inside your new project folder.</p>
+
+    <div class="code-block">
+<span class="comment"># Scaffold a new project (interactive)</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/remotion-setup.sh) new</span>
+
+<span class="comment"># List all available templates</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/remotion-setup.sh) templates</span>
+    </div>
+
+    <div class="code-block" style="margin-top:1rem">
+<span class="comment"># Start Remotion Studio — live preview with timeline scrubber</span>
+cd my-video
+<span class="cmd">npm run dev</span>       <span class="comment"># or: pnpm dev / bun run dev / yarn dev</span>
+<span class="comment"># → Opens at http://localhost:3000</span>
+    </div>
+
+    <div class="code-block" style="margin-top:1rem">
+<span class="comment"># Render composition to video file</span>
+<span class="cmd">npx remotion render</span> &lt;CompositionId&gt;
+<span class="comment"># Output: ./my-video/out/&lt;CompositionId&gt;.mp4</span>
+    </div>
+
+    <div class="code-block" style="margin-top:1rem">
+<span class="comment"># Export a single still frame as PNG</span>
+<span class="cmd">npx remotion still</span> &lt;CompositionId&gt;
+<span class="comment"># Output: ./my-video/out/&lt;CompositionId&gt;.png</span>
+    </div>
+
+    <p style="color:var(--text-muted);font-size:0.875rem;margin-top:1.5rem">
+      Docs: <a href="https://www.remotion.dev/docs" style="color:var(--accent-cyan)">remotion.dev/docs</a> &nbsp;·&nbsp;
+      API: <a href="https://www.remotion.dev/api" style="color:var(--accent-cyan)">remotion.dev/api</a> &nbsp;·&nbsp;
+      Discord: <a href="https://remotion.dev/discord" style="color:var(--accent-cyan)">remotion.dev/discord</a>
+    </p>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>
+    <a href="index.html">setupai.dev</a> &nbsp;·&nbsp;
+    <a href="https://github.com/otto-ai-labs/setupai.dev">GitHub</a> &nbsp;·&nbsp;
+    <a href="light.html">Light Stack ⚡</a> &nbsp;·&nbsp;
+    <a href="paperclip-setup.html">Paperclip Setup</a> &nbsp;·&nbsp;
+    MIT License &nbsp;·&nbsp;
+    Built by otto-ai-labs
+  </p>
+</footer>
+
+<script>
+  const INSTALL_CMD = 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/remotion-setup.sh) new';
+  const OUTPUTS = [
+    '[INFO] Node.js v22.x OK · npm 10.x OK',
+    '[INFO] Scaffolding "my-video" with template "hello-world" using npm...',
+    '[SUCCESS] Project ready! cd my-video && npm run dev',
+  ];
+  const typewriterEl = document.getElementById('typewriter');
+  const cursorEl     = document.getElementById('cursor');
+  let charIndex = 0, outputIndex = 0, typingDone = false;
+  function typeChar() {
+    if (charIndex < INSTALL_CMD.length) {
+      typewriterEl.textContent += INSTALL_CMD[charIndex++];
+      setTimeout(typeChar, 28);
+    } else if (!typingDone) {
+      typingDone = true; cursorEl.style.display = 'none';
+      setTimeout(showOutputs, 600);
+    }
+  }
+  function showOutputs() {
+    if (outputIndex < OUTPUTS.length) {
+      const el = document.getElementById('term-output-' + (outputIndex + 1));
+      if (el) { el.textContent = OUTPUTS[outputIndex]; el.style.display = 'block'; }
+      outputIndex++; setTimeout(showOutputs, 700);
+    }
+  }
+  setTimeout(typeChar, 500);
+
+  const hamburger = document.getElementById('nav-hamburger');
+  const navLinks  = document.getElementById('nav-links');
+  hamburger.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+    navLinks.classList.remove('open'); hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }));
+
+  function copyInstallCmd() {
+    const btn   = document.getElementById('copy-btn');
+    const label = document.getElementById('copy-label');
+    const icon  = document.getElementById('copy-icon');
+    const checkSVG = '<polyline points="20 6 9 17 4 12"></polyline>';
+    const copySVG  = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
+    function onSuccess() {
+      btn.classList.add('copied'); label.textContent = 'Copied!'; icon.innerHTML = checkSVG;
+      setTimeout(() => { btn.classList.remove('copied'); label.textContent = 'Copy'; icon.innerHTML = copySVG; }, 2000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(INSTALL_CMD).then(onSuccess).catch(fallback);
+    } else { fallback(); }
+    function fallback() {
+      const ta = document.createElement('textarea');
+      ta.value = INSTALL_CMD; ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand('copy'); onSuccess(); } catch(e) {}
+      document.body.removeChild(ta);
+    }
+  }
+</script>
+</body>
+</html>

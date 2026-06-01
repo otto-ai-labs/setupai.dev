@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>setupai.dev — Mac Setup for AI Builders</title>
-  <meta name="description" content="One command. Go from a fresh Mac to shipping AI-powered products." />
+  <title>Paperclip + AWS Bedrock Setup — setupai.dev</title>
+  <meta name="description" content="Install Paperclip locally and connect it to AWS Bedrock. No static AWS keys required." />
   <style>
     :root {
       --bg-primary:   #0d1117;
@@ -85,15 +85,6 @@
     .btn-copy:active { transform: scale(0.97); }
     .btn-copy.copied { background: var(--accent-cyan); }
 
-    /* OS tab switcher */
-    .os-tabs { display: flex; gap: 0; margin-bottom: 1rem; justify-content: center; }
-    .os-tab { background: none; border: 1px solid var(--border); color: var(--text-muted); font-family: var(--font-mono); font-size: 0.8rem; padding: 0.45rem 1.1rem; cursor: pointer; transition: background 0.15s, color 0.15s; }
-    .os-tab:first-child { border-radius: 6px 0 0 6px; }
-    .os-tab:last-child  { border-radius: 0 6px 6px 0; border-left: none; }
-    .os-tab.active { background: rgba(57,211,83,0.15); border-color: var(--accent-green); color: var(--accent-green); }
-    .win-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center; }
-    .win-note span { color: #f0a070; }
-
     /* ── Sections ── */
     section { padding: 3rem 1.25rem; }
     @media (min-width: 601px) { section { padding: 4rem 2rem; } }
@@ -112,28 +103,17 @@
     .step-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
     .step-content p  { color: var(--text-muted); font-size: 0.9rem; }
 
-    /* ── Tools grid ── */
-    .tools-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
-    @media (max-width: 760px) { .tools-grid { grid-template-columns: repeat(2,1fr); } }
-    @media (max-width: 500px) { .tools-grid { grid-template-columns: 1fr; } }
-    .tools-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; transition: border-color 0.15s; }
-    .tools-card:hover { border-color: var(--accent-green); }
-    .tools-card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
-    .tools-card-icon  { font-size: 1.25rem; }
-    .tools-card-title { font-size: 0.875rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.05em; }
-    .tools-card ul    { list-style: none; }
-    .tools-card li    { font-size: 0.875rem; color: var(--text-muted); padding: 0.2rem 0; display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
-    .tools-card li::before { content: '›'; color: var(--accent-green); font-family: var(--font-mono); flex-shrink: 0; }
-    .tools-card li strong  { color: var(--text-primary); }
-    .skip-badge { display: inline-block; font-size: 0.68rem; font-family: var(--font-mono); background: rgba(255,100,100,0.1); border: 1px solid rgba(255,100,100,0.25); color: #f07070; border-radius: 4px; padding: 0 5px; line-height: 1.6; }
+    /* ── Two-column tool list ── */
+    .tool-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 3rem; margin-top: 0.5rem; }
+    @media (max-width: 600px) { .tool-columns { grid-template-columns: 1fr; gap: 1rem; } }
+    .tool-group-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .tool-list { list-style: none; display: flex; flex-direction: column; gap: 0.1rem; }
+    .tool-list li { display: flex; align-items: baseline; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(48,54,61,0.5); font-size: 0.875rem; color: var(--text-muted); }
+    .tool-list li:last-child { border-bottom: none; }
+    .tool-list li::before { content: '›'; color: var(--accent-green); font-family: var(--font-mono); flex-shrink: 0; }
+    .tool-list li strong { color: var(--text-primary); white-space: nowrap; }
 
-    /* ── Code blocks ── */
-    .code-block { background: var(--bg-terminal); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem 1rem; font-family: var(--font-mono); font-size: 0.75rem; overflow-x: auto; margin: 0.75rem 0; color: var(--text-primary); -webkit-overflow-scrolling: touch; white-space: pre; }
-    @media (min-width: 601px) { .code-block { font-size: 0.85rem; padding: 1rem 1.25rem; } }
-    .code-block .comment { color: var(--text-muted); display: block; }
-    .code-block .cmd     { color: var(--accent-cyan); display: block; }
-
-    /* Flags table */
+    /* ── Env table ── */
     .flags-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 1.5rem; border: 1px solid var(--border); border-radius: 8px; }
     .flags-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 480px; }
     .flags-table th { text-align: left; padding: 0.6rem 1rem; background: var(--bg-terminal); color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
@@ -143,6 +123,12 @@
     .flags-table .highlight-row td { background: rgba(57,211,83,0.06); }
     .flags-table .highlight-row td:first-child { color: var(--accent-green); }
 
+    /* ── Code blocks ── */
+    .code-block { background: var(--bg-terminal); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem 1rem; font-family: var(--font-mono); font-size: 0.75rem; overflow-x: auto; margin: 0.75rem 0; color: var(--text-primary); -webkit-overflow-scrolling: touch; white-space: pre; }
+    @media (min-width: 601px) { .code-block { font-size: 0.85rem; padding: 1rem 1.25rem; } }
+    .code-block .comment { color: var(--text-muted); display: block; }
+    .code-block .cmd     { color: var(--accent-cyan); display: block; }
+
     /* ── Checklist ── */
     .checklist { display: flex; flex-direction: column; gap: 0.875rem; }
     .check-item { display: flex; align-items: flex-start; gap: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem 1rem; }
@@ -151,6 +137,9 @@
     .check-item h4 { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.2rem; }
     .check-item p  { font-size: 0.825rem; color: var(--text-muted); word-break: break-word; }
     .check-item code { font-family: var(--font-mono); font-size: 0.75rem; background: var(--bg-terminal); padding: 0.1rem 0.4rem; border-radius: 4px; color: var(--accent-cyan); word-break: break-all; }
+
+    /* inline cyan code */
+    .ic { font-family: var(--font-mono); font-size: 0.85em; background: rgba(88,215,247,0.1); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px; }
 
     /* ── Footer ── */
     footer { background: var(--bg-secondary); border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); }
@@ -163,18 +152,16 @@
 <!-- ── Nav ── -->
 <nav>
   <div class="nav-inner">
-    <a href="#" class="nav-brand">setupai<span>.dev</span></a>
+    <a href="index.html" class="nav-brand">setupai<span>.dev</span></a>
     <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
     <ul class="nav-links" id="nav-links">
       <li><a href="#how">How it works</a></li>
-      <li><a href="#tools">Tools</a></li>
-      <li><a href="#options">Options</a></li>
+      <li><a href="#config">Configuration</a></li>
       <li><a href="#after">After Install</a></li>
+      <li><a href="index.html">Full Stack</a></li>
       <li><a href="light.html">Light Stack ⚡</a></li>
-      <li><a href="paperclip-setup.html">Paperclip</a></li>
-      <li><a href="remotion-setup.html">Remotion</a></li>
       <li><a href="https://github.com/otto-ai-labs/setupai.dev">GitHub</a></li>
     </ul>
   </div>
@@ -183,22 +170,16 @@
 <!-- ── Hero ── -->
 <section class="hero-section" style="background: var(--bg-primary);">
   <div class="hero">
-    <div class="hero-badge">macOS · Windows · Intel &amp; Apple Silicon · Free &amp; Open Source</div>
-    <h1>Setup for<br><span class="highlight">AI Builders</span></h1>
-    <p>One command. Go from a fresh Mac or Windows PC to shipping AI-powered products. Want the lean build day setup? See the <a href="light.html" style="color:var(--accent-cyan)">Light Stack ⚡</a> (macOS only).</p>
-
-    <!-- OS tabs -->
-    <div class="os-tabs">
-      <button class="os-tab active" id="tab-mac" onclick="switchOS('mac')">🍎 macOS</button>
-      <button class="os-tab" id="tab-win" onclick="switchOS('win')">🪟 Windows</button>
-    </div>
+    <div class="hero-badge">Extra — macOS · Paperclip + AWS Bedrock · No static keys required</div>
+    <h1>Paperclip<br><span class="highlight">+ AWS Bedrock</span></h1>
+    <p>Install Paperclip locally and wire it to AWS Bedrock using an <code class="ic">ANTHROPIC_BEDROCK_BASE_URL</code> token. No static AWS access keys needed.</p>
 
     <div class="terminal-window">
       <div class="terminal-titlebar">
         <div class="terminal-dot red"></div>
         <div class="terminal-dot yellow"></div>
         <div class="terminal-dot green"></div>
-        <div class="terminal-title" id="term-title">Terminal — zsh</div>
+        <div class="terminal-title">Terminal — zsh</div>
       </div>
       <div class="terminal-body">
         <div class="terminal-line">
@@ -211,7 +192,7 @@
     </div>
 
     <div class="copy-area">
-      <div class="install-cmd" id="install-cmd-display">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</div>
+      <div class="install-cmd" id="install-cmd-display">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/paperclip-setup.sh) install</div>
       <button class="btn-copy" id="copy-btn" onclick="copyInstallCmd()">
         <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -220,177 +201,100 @@
         <span id="copy-label">Copy</span>
       </button>
     </div>
-    <p class="win-note" id="win-note"></p>
   </div>
 </section>
 
 <!-- ── How it works ── -->
 <section id="how">
   <div class="section-inner">
-    <div class="section-label">Quick Start</div>
-    <h2 class="section-title">Up and running in ~20 minutes.</h2>
-    <p class="section-sub">An interactive checkbox menu appears before anything installs — pick exactly what you want. Want a faster lean setup? Use the <a href="light.html" style="color:var(--accent-cyan)">Light Stack ⚡</a> (macOS).</p>
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">One command. Paperclip ready in minutes.</h2>
+    <p class="section-sub">The script handles cloning, dependencies, Bedrock config, and the <code class="ic">.env</code> file — all interactively.</p>
     <div class="steps-list">
       <div class="step-item">
         <div class="step-number">1</div>
         <div class="step-content">
-          <h3>Open Terminal</h3>
-          <p>Press <strong>Cmd + Space</strong>, type <strong>Terminal</strong>, press Enter. Paste the command above and hit Enter.</p>
+          <h3>Check dependencies</h3>
+          <p>Verifies Node.js 20+ and Git are installed. Installs <strong>pnpm</strong> automatically if missing.</p>
         </div>
       </div>
       <div class="step-item">
         <div class="step-number">2</div>
         <div class="step-content">
-          <h3>Enter your Git details</h3>
-          <p>The script asks for your <strong>name</strong> and <strong>email</strong> — use the same ones as your GitHub account.</p>
+          <h3>Clone Paperclip</h3>
+          <p>Clones <strong>paperclipai/paperclip</strong> into <code class="ic">~/paperclip</code> (or your <code class="ic">$PAPERCLIP_DIR</code>) and runs <code class="ic">pnpm install</code>. Already installed? It pulls the latest instead.</p>
         </div>
       </div>
       <div class="step-item">
         <div class="step-number">3</div>
         <div class="step-content">
-          <h3>Choose your tools</h3>
-          <p>A checkbox menu appears for each category. With <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg-terminal);padding:1px 5px;border-radius:4px;color:var(--accent-cyan)">--light</code>, heavy tools are pre-unchecked. Use <strong>↑/↓</strong> to move, <strong>Space</strong> to toggle, <strong>D</strong> to confirm.</p>
+          <h3>Configure Bedrock</h3>
+          <p>Prompts for your <strong>ANTHROPIC_BEDROCK_BASE_URL</strong> and AWS region. Writes them to <code class="ic">~/.zshenv</code> and reloads the environment. Credentials are cached — re-running skips this prompt.</p>
         </div>
       </div>
       <div class="step-item">
         <div class="step-number">4</div>
         <div class="step-content">
-          <h3>Walk away</h3>
-          <p>Everything installs automatically. Takes around <strong>20 minutes</strong> on the light stack, up to 60 on the full install.</p>
-        </div>
-      </div>
-      <div class="step-item">
-        <div class="step-number">5</div>
-        <div class="step-content">
-          <h3>Follow the after-install checklist</h3>
-          <p>Open a fresh terminal, add your SSH key to GitHub, set your API keys, and start building. See the <a href="#after" style="color:var(--accent-cyan)">After Install</a> section below.</p>
+          <h3>Write <code class="ic">.env</code></h3>
+          <p>Creates <code class="ic">~/paperclip/.env</code> with your database URL, port <strong>3100</strong>, and a randomly generated <strong>BETTER_AUTH_SECRET</strong>. File is <code class="ic">chmod 600</code>.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Tools ── -->
-<section id="tools">
+<!-- ── Commands ── -->
+<section id="commands">
   <div class="section-inner">
-    <div class="section-label">What Gets Installed</div>
-    <h2 class="section-title">Everything you need. Nothing you don't.</h2>
-    <p class="section-sub">Tools marked <span class="skip-badge">skipped in --light</span> are off by default — you can toggle them back on in the menus.</p>
-    <div class="tools-grid">
+    <div class="section-label">Commands</div>
+    <h2 class="section-title">Three commands. That's all.</h2>
+    <p class="section-sub">Run from the root of the mac-setup repo.</p>
 
-      <div class="tools-card">
-        <div class="tools-card-header"><span class="tools-card-icon">🤖</span><span class="tools-card-title">AI Tools</span></div>
-        <ul>
-          <li><strong>Claude Code</strong> — Anthropic's AI coding CLI</li>
-          <li><strong>Codex CLI</strong> — OpenAI's coding CLI</li>
-          <li><strong>GitHub CLI</strong> — manage repos &amp; PRs</li>
-          <li><strong>Ollama</strong> <span class="skip-badge">skipped in --light</span></li>
-          <li><strong>AWS CLI</strong> <span class="skip-badge">skipped in --light</span></li>
-          <li><strong>Terraform</strong> — infrastructure as code</li>
-          <li><strong>ngrok</strong> — expose localhost to internet</li>
-        </ul>
-      </div>
+    <div class="code-block"><span class="comment"># Full install — clone, configure Bedrock, write .env</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/paperclip-setup.sh) install</span>
 
-      <div class="tools-card">
-        <div class="tools-card-header"><span class="tools-card-icon">🐍</span><span class="tools-card-title">Languages</span></div>
-        <ul>
-          <li><strong>Python 3.12</strong> — main AI/ML language</li>
-          <li><strong>uv</strong> — lightning-fast package manager</li>
-          <li><strong>Node.js LTS</strong> — via nvm</li>
-          <li><strong>virtualenv</strong> — isolated environments</li>
-          <li><strong>Python 3.11</strong> <span class="skip-badge">skipped in --light</span></li>
-          <li><strong>Jupyter / JupyterLab</strong> <span class="skip-badge">skipped in --light</span></li>
-        </ul>
-      </div>
+<span class="comment"># Re-enter your Bedrock base URL and region</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/paperclip-setup.sh) update-token</span>
 
-      <div class="tools-card">
-        <div class="tools-card-header"><span class="tools-card-icon">⚡</span><span class="tools-card-title">Shell &amp; Terminal</span></div>
-        <ul>
-          <li><strong>Oh My Zsh</strong> — shell enhancements</li>
-          <li><strong>Starship</strong> — smart, fast prompt</li>
-          <li><strong>bat</strong> — cat with syntax highlighting</li>
-          <li><strong>eza</strong> — modern ls with git status</li>
-          <li><strong>fzf, ripgrep, fd</strong> — fast search tools</li>
-        </ul>
-      </div>
-
-      <div class="tools-card">
-        <div class="tools-card-header"><span class="tools-card-icon">🗄</span><span class="tools-card-title">Databases</span></div>
-        <ul>
-          <li><strong>Redis</strong> — in-memory cache &amp; queues</li>
-          <li><strong>SQLite</strong> — lightweight embedded DB</li>
-          <li><strong>PostgreSQL 15</strong> <span class="skip-badge">skipped in --light</span></li>
-          <li><strong>DuckDB</strong> <span class="skip-badge">skipped in --light</span></li>
-        </ul>
-      </div>
-
-      <div class="tools-card">
-        <div class="tools-card-header"><span class="tools-card-icon">✏️</span><span class="tools-card-title">Editors</span></div>
-        <ul>
-          <li><strong>Cursor</strong> — AI-native editor with built-in chat</li>
-          <li><strong>VS Code</strong> <span class="skip-badge">skipped in --light</span></li>
-        </ul>
-      </div>
-
-      <div class="tools-card">
-        <div class="tools-card-header"><span class="tools-card-icon">🚀</span><span class="tools-card-title">Productivity</span></div>
-        <ul>
-          <li><strong>Warp</strong> — AI-powered terminal</li>
-          <li><strong>iTerm2</strong> — classic terminal emulator</li>
-          <li><strong>Obsidian</strong> — local markdown notes</li>
-          <li><strong>Lungo</strong> — keep Mac awake</li>
-          <li><strong>Shottr</strong> — screenshots with OCR</li>
-          <li><strong>Raycast</strong> <span class="skip-badge">skipped in --light</span></li>
-          <li><strong>LM Studio</strong> <span class="skip-badge">skipped in --light</span></li>
-          <li><strong>Rectangle / AltTab</strong> <span class="skip-badge">skipped in --light</span></li>
-          <li><strong>DBeaver / TablePlus</strong> <span class="skip-badge">skipped in --light</span></li>
-        </ul>
-      </div>
-
-    </div>
+<span class="comment"># Show current Bedrock configuration</span>
+<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/paperclip-setup.sh) status</span></div>
   </div>
 </section>
 
-<!-- ── Options ── -->
-<section id="options">
+<!-- ── Configuration ── -->
+<section id="config">
   <div class="section-inner">
-    <div class="section-label">Customise Your Install</div>
-    <h2 class="section-title">You choose exactly what gets installed.</h2>
-    <p class="section-sub">A checkbox menu appears before anything installs. Use flags to control the defaults.</p>
+    <div class="section-label">Configuration</div>
+    <h2 class="section-title">Environment variables &amp; generated files.</h2>
+    <p class="section-sub">All credentials are stored with <code class="ic">chmod 600</code> and never hard-coded in the repo.</p>
 
-    <div class="section-label" style="margin-top:0">macOS</div>
-    <div class="code-block"><span class="comment"># Lean build day setup — recommended for most founders</span>
-<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span> --light</div>
-
-    <div class="code-block"><span class="comment"># Full install — all tools, interactive menus</span>
-<span class="cmd">bash &lt;(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)</span></div>
-
-    <div class="section-label" style="margin-top:1.5rem">Windows (PowerShell as Admin)</div>
-    <div class="code-block"><span class="comment"># One-liner — clones repo and runs setup</span>
-<span class="cmd">irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/install.ps1 | iex</span></div>
-
-    <div class="code-block"><span class="comment"># Or clone first to pass your own flags</span>
-git clone https://github.com/otto-ai-labs/setupai.dev.git
-cd setupai.dev\windows
-<span class="cmd">.\setup.ps1</span> -Light</div>
-
+    <div class="tool-group-title" style="margin-bottom:1rem">Shell environment — written to <code class="ic">~/.zshenv</code></div>
     <div class="flags-table-wrap">
       <table class="flags-table">
-        <thead><tr><th>Flag (macOS / Windows)</th><th>What it does</th></tr></thead>
+        <thead><tr><th>Variable</th><th>Purpose</th></tr></thead>
         <tbody>
           <tr class="highlight-row">
-            <td>--light / -Light</td>
-            <td>Lean build day setup — pre-deselects Ollama, Jupyter, Python 3.11, PostgreSQL, DuckDB, VS Code, Raycast/PowerToys, LM Studio, DBeaver, TablePlus. Menus still shown so you can adjust.</td>
+            <td>ANTHROPIC_BEDROCK_BASE_URL</td>
+            <td>Your Bedrock proxy endpoint (e.g. <code style="font-family:var(--font-mono);font-size:0.8em">https://bedrock.us-east-1.amazonaws.com</code>)</td>
           </tr>
-          <tr><td>--yes, -y / -Yes</td><td>Auto-answers yes to upgrade prompts. Selection menus still appear.</td></tr>
-          <tr><td>--minimal / -Minimal</td><td>Skips all menus. Installs only languages and shell tools.</td></tr>
-          <tr><td>--skip-ai-tools / -SkipAiTools</td><td>Skips the AI tools category entirely.</td></tr>
-          <tr><td>--skip-databases / -SkipDatabases</td><td>Skips the databases category entirely.</td></tr>
-          <tr><td>--skip-web / -SkipWeb</td><td>Skips all web/JS tools — pnpm, TypeScript, ESLint, Vite, and more.</td></tr>
-          <tr><td>--help / -Help</td><td>Shows all available options in the terminal.</td></tr>
+          <tr>
+            <td>PAPERCLIP_AWS_REGION</td>
+            <td>AWS region — defaults to <code style="font-family:var(--font-mono);font-size:0.8em">us-east-1</code></td>
+          </tr>
+          <tr>
+            <td>PAPERCLIP_DIR</td>
+            <td>Override install directory — set in your shell before running install (default: <code style="font-family:var(--font-mono);font-size:0.8em">~/paperclip</code>)</td>
+          </tr>
         </tbody>
       </table>
     </div>
+
+    <div class="tool-group-title" style="margin-top:2rem;margin-bottom:1rem">Generated <code class="ic">~/paperclip/.env</code></div>
+    <div class="code-block">DATABASE_URL=postgres://paperclip:paperclip@localhost:5432/paperclip
+PORT=3100
+SERVE_UI=false
+BETTER_AUTH_SECRET=&lt;40-char random string&gt;</div>
+    <p style="color:var(--text-muted);font-size:0.875rem;margin-top:0.75rem">To use a different database, enter a custom <code class="ic">DATABASE_URL</code> when prompted, or delete <code class="ic">~/.claude/provider-backups/paperclip_db_url</code> to re-prompt on next run.</p>
   </div>
 </section>
 
@@ -398,28 +302,24 @@ cd setupai.dev\windows
 <section id="after">
   <div class="section-inner">
     <div class="section-label">After Install</div>
-    <h2 class="section-title">You're almost ready to build.</h2>
-    <p class="section-sub">Complete these steps after the script finishes.</p>
+    <h2 class="section-title">Start Paperclip and connect Claude Code.</h2>
+    <p class="section-sub">Four quick steps after the script finishes.</p>
     <div class="checklist">
       <div class="check-item">
         <div class="check-box"></div>
-        <div><h4>Reload your terminal</h4><p>Close the window and open a fresh one, or run <code>source ~/.zshrc</code>.</p></div>
+        <div><h4>Reload your shell</h4><p>Close and reopen your terminal, or run <code>source ~/.zshenv</code> to pick up the new Bedrock env vars.</p></div>
       </div>
       <div class="check-item">
         <div class="check-box"></div>
-        <div><h4>Add your SSH key to GitHub</h4><p>Run <code>cat ~/.ssh/id_ed25519.pub</code>, copy the output, and add it at <a href="https://github.com/settings/keys" style="color:var(--accent-cyan)">github.com/settings/keys</a>.</p></div>
+        <div><h4>Start Paperclip</h4><p><code>cd ~/paperclip &amp;&amp; pnpm dev</code> — the server starts on port <code>3100</code>.</p></div>
       </div>
       <div class="check-item">
         <div class="check-box"></div>
-        <div><h4>Set your API keys</h4><p>Add to <code>~/.extra</code> (gitignored, auto-loaded):<br><code>export ANTHROPIC_API_KEY='sk-ant-...'</code><br><code>export OPENAI_API_KEY='sk-...'</code></p></div>
+        <div><h4>Open the UI</h4><p>Visit <code>http://localhost:3100</code> in your browser.</p></div>
       </div>
       <div class="check-item">
         <div class="check-box"></div>
-        <div><h4>Start building</h4><p>Run <code>claude</code> or open <code>cursor .</code> in your project folder.</p></div>
-      </div>
-      <div class="check-item">
-        <div class="check-box"></div>
-        <div><h4>Restart your Mac</h4><p>Ensures all system-level changes (animations, Dock, performance tweaks) take full effect.</p></div>
+        <div><h4>Add a Claude Code agent</h4><p>In the Paperclip UI, add an agent. Paperclip's <code>claude-local</code> adapter reads <code>ANTHROPIC_BEDROCK_BASE_URL</code> from your environment and automatically uses Bedrock model IDs.</p></div>
       </div>
     </div>
   </div>
@@ -428,44 +328,21 @@ cd setupai.dev\windows
 <!-- ── Footer ── -->
 <footer>
   <p>
-    <a href="https://github.com/otto-ai-labs/setupai.dev">setupai.dev</a> &nbsp;·&nbsp;
+    <a href="index.html">setupai.dev</a> &nbsp;·&nbsp;
     <a href="https://github.com/otto-ai-labs/setupai.dev">GitHub</a> &nbsp;·&nbsp;
     <a href="light.html">Light Stack ⚡</a> &nbsp;·&nbsp;
+    <a href="remotion-setup.html">Remotion Setup</a> &nbsp;·&nbsp;
     MIT License &nbsp;·&nbsp;
     Built by otto-ai-labs
   </p>
 </footer>
 
 <script>
-  const CMDS = {
-    mac: 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/setup.sh)',
-    win: 'irm https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/windows/install.ps1 | iex'
-  };
-  let currentOS = 'mac';
-
-  function switchOS(os) {
-    currentOS = os;
-    document.getElementById('tab-mac').classList.toggle('active', os === 'mac');
-    document.getElementById('tab-win').classList.toggle('active', os === 'win');
-    const display = document.getElementById('install-cmd-display');
-    const note    = document.getElementById('win-note');
-    const title   = document.getElementById('term-title');
-    if (os === 'mac') {
-      display.textContent = CMDS.mac;
-      note.innerHTML = '';
-      title.textContent = 'Terminal — zsh';
-    } else {
-      display.textContent = CMDS.win;
-      note.innerHTML = '<span>Note:</span> Run PowerShell as Administrator. Requires Windows 10 (1809+) or Windows 11.';
-      title.textContent = 'PowerShell 7';
-    }
-  }
-
-  const INSTALL_CMD = CMDS.mac;
+  const INSTALL_CMD = 'bash <(curl -fsSL https://raw.githubusercontent.com/otto-ai-labs/setupai.dev/main/extra/paperclip-setup.sh) install';
   const OUTPUTS = [
-    '[INFO] Installing Python 3.12, Node.js, uv...',
-    '[INFO] Installing Claude Code, Cursor, Ollama, PostgreSQL...',
-    '[SUCCESS] AI Builder Stack ready! ⚡',
+    '[INFO] Cloning paperclipai/paperclip → ~/paperclip...',
+    '[INFO] Configuring ANTHROPIC_BEDROCK_BASE_URL in ~/.zshenv...',
+    '[SUCCESS] Paperclip + Bedrock ready! Open http://localhost:3100',
   ];
   const typewriterEl = document.getElementById('typewriter');
   const cursorEl     = document.getElementById('cursor');
@@ -501,8 +378,7 @@ cd setupai.dev\windows
   }));
 
   function copyInstallCmd() {
-    const COPY_TEXT = CMDS[currentOS];
-    const btn = document.getElementById('copy-btn');
+    const btn   = document.getElementById('copy-btn');
     const label = document.getElementById('copy-label');
     const icon  = document.getElementById('copy-icon');
     const checkSVG = '<polyline points="20 6 9 17 4 12"></polyline>';
@@ -512,11 +388,11 @@ cd setupai.dev\windows
       setTimeout(() => { btn.classList.remove('copied'); label.textContent = 'Copy'; icon.innerHTML = copySVG; }, 2000);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(COPY_TEXT).then(onSuccess).catch(fallback);
+      navigator.clipboard.writeText(INSTALL_CMD).then(onSuccess).catch(fallback);
     } else { fallback(); }
     function fallback() {
       const ta = document.createElement('textarea');
-      ta.value = COPY_TEXT; ta.style.cssText = 'position:fixed;opacity:0';
+      ta.value = INSTALL_CMD; ta.style.cssText = 'position:fixed;opacity:0';
       document.body.appendChild(ta); ta.focus(); ta.select();
       try { document.execCommand('copy'); onSuccess(); } catch(e) {}
       document.body.removeChild(ta);

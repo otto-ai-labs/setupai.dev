@@ -134,10 +134,10 @@
     .step-content p  { color: var(--text-muted); font-size: 0.9rem; }
 
     /* ── Code blocks ── */
-    .code-block { background: var(--bg-terminal); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem 1rem; font-family: var(--font-mono); font-size: 0.75rem; overflow-x: auto; margin: 0.75rem 0; color: var(--text-primary); -webkit-overflow-scrolling: touch; }
+    .code-block { background: var(--bg-terminal); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem 1rem; font-family: var(--font-mono); font-size: 0.75rem; overflow-x: auto; margin: 0.75rem 0; color: var(--text-primary); -webkit-overflow-scrolling: touch; white-space: pre; }
     @media (min-width: 601px) { .code-block { font-size: 0.85rem; padding: 1rem 1.25rem; } }
-    .code-block .comment { color: var(--text-muted); }
-    .code-block .cmd     { color: var(--accent-cyan); }
+    .code-block .comment { color: var(--text-muted); display: block; }
+    .code-block .cmd     { color: var(--accent-cyan); display: block; }
 
     /* ── Checklist ── */
     .checklist { display: flex; flex-direction: column; gap: 0.875rem; }
@@ -177,6 +177,8 @@
       <li><a href="#skipped">Skipped by default</a></li>
       <li><a href="#after">After Install</a></li>
       <li><a href="index.html">Full Stack</a></li>
+      <li><a href="paperclip-setup.html">Paperclip</a></li>
+      <li><a href="remotion-setup.html">Remotion</a></li>
       <li><a href="https://github.com/otto-ai-labs/setupai.dev">GitHub</a></li>
     </ul>
   </div>
